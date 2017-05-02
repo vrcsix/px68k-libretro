@@ -88,7 +88,7 @@ extern	short		timertrace;
 	char		filepath[MAX_PATH] = ".";
 	int		fddblink = 0;
 	int		fddblinkcount = 0;
-	int		hddtrace = 0;
+	int		hddtrace = 1;//0;
 extern  int		dmatrace;
 
 	DWORD		LastClock[4] = {0, 0, 0, 0};
@@ -241,7 +241,17 @@ WinUI_Init(void)
 #elif TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR == 0
 #define CUR_DIR_STR "/var/mobile/px68k/"
 #else
+
+#ifdef __LIBRETRO__
+#ifdef _WIN32
+#define CUR_DIR_STR "c:\\"
+#else
+#define CUR_DIR_STR "/"
+#endif
+#else
 #define CUR_DIR_STR "./"
+#endif
+
 #endif
 
 	strcpy(cur_dir_str, CUR_DIR_STR);
@@ -511,6 +521,9 @@ static void menu_joykey(int v)
 	Config.JoyKey = v;
 }
 
+#ifdef __LIBRETRO__
+extern char slash;
+#endif
 // ex. ./hoge/.. -> ./
 // ( ./ ---down hoge dir--> ./hoge ---up hoge dir--> ./hoge/.. )
 static void shortcut_dir(int drv)
@@ -522,17 +535,24 @@ static void shortcut_dir(int drv)
 	len = strlen(mfl.dir[drv]);
 	p = mfl.dir[drv] + len - 2;
 	for (i = len - 2; i >= 0; i--) {
-		if (*p == '/') {
+		if (*p == slash/*'/'*/) {
 			found = 1;
 			break;
 		}
 		p--;
 	}
-
+#ifdef _WIN32
+	if (found && strcmp(p, "\\..\\")) {
+#else
 	if (found && strcmp(p, "/../")) {
+#endif
 		*(p + 1) = '\0';
 	} else {
+#ifdef _WIN32
+		strcat(mfl.dir[drv], "..\\");
+#else
 		strcat(mfl.dir[drv], "../");
+#endif
 	}
 }
 
@@ -724,7 +744,11 @@ int WinUI_Menu(int first)
 					shortcut_dir(drv);
 				} else {
 					strcat(mfl.dir[drv], mfl.name[y]);
+#ifdef _WIN32
+					strcat(mfl.dir[drv], "\\");
+#else
 					strcat(mfl.dir[drv], "/");
+#endif
 				}
 				menu_func[mkey_y].func(0);
 				mfile_redraw = 1;

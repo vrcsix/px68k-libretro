@@ -47,7 +47,10 @@
 #include "tvram.h"
 #include "joystick.h"
 #include "keyboard.h"
-
+#ifdef __LIBRETRO__
+extern uint16_t *videoBuffer;
+extern SDL_Surface *mysdl_surface;
+#endif
 #if 0
 #include "../icons/keropi.xpm"
 #endif
@@ -64,11 +67,11 @@ WORD *ScrBuf = 0;
 WORD *menu_buffer;
 WORD *kbd_buffer;
 #endif
-
+#ifndef __LIBRETRO__
 #ifdef  USE_SDLGFX
 SDL_Surface *sdl_rgbsurface;
 #endif
-
+#endif
 int Draw_Opaque;
 int FullScreenFlag = 0;
 extern BYTE Draw_RedrawAllFlag;
@@ -401,7 +404,7 @@ int WinDraw_Init(void)
 
 	draw_kbd_to_tex();
 #else
-
+#ifndef __LIBRETRO__
 #ifdef USE_SDLGFX
 	sdl_rgbsurface = SDL_CreateRGBSurface(SDL_SWSURFACE, 800, 600, 16, WinDraw_Pal16R, WinDraw_Pal16G, WinDraw_Pal16B, 0);
 
@@ -412,6 +415,8 @@ int WinDraw_Init(void)
 	ScrBuf = sdl_rgbsurface->pixels;
 
 	printf("drawbuf: 0x%x, ScrBuf: 0x%x\n", sdl_surface->pixels, ScrBuf);
+	printf("drawbuf: 0x%x, ScrBuf: 0x%x\n", mysdl_surface->pixels);
+#endif
 #else
 	ScrBuf = malloc(800 * 600 * 2);
 #endif
@@ -476,7 +481,7 @@ void draw_all_buttons(GLfloat *tex, GLfloat *ver, GLfloat scale, int is_menu)
 	}
 }
 #endif // USE_OGLES11
-
+extern int retrow,retroh,CHANGEAV;
 void FASTCALL
 WinDraw_Draw(void)
 {
@@ -486,12 +491,17 @@ WinDraw_Draw(void)
 	if (oldtextx != TextDotX) {
 		oldtextx = TextDotX;
 		p6logd("TextDotX: %d\n", TextDotX);
+CHANGEAV=1;
 	}
 	if (oldtexty != TextDotY) {
 		oldtexty = TextDotY;
 		p6logd("TextDotY: %d\n", TextDotY);
+CHANGEAV=1;
 	}
-
+if(CHANGEAV==1){
+retrow=TextDotX;
+retroh=TextDotY;
+}
 #if defined(USE_OGLES11)
 	GLfloat texture_coordinates[8];
 	GLfloat vertices[8];
@@ -651,13 +661,16 @@ WinDraw_Draw(void)
 	sceGuSwapBuffers();
 
 #else // OpenGL ES Ã§ª»Õ—
-
+#ifndef __LIBRETRO__
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 	sdl_surface = SDL_GetWindowSurface(sdl_window);
 #else
 	sdl_surface = SDL_GetVideoSurface();
 #endif
-
+#else
+sdl_surface = mysdl_surface;
+#endif
+#ifndef __LIBRETRO__
 #ifdef USE_SDLGFX
 	SDL_Surface *roto_surface = NULL;
 	int ret;
@@ -667,10 +680,11 @@ WinDraw_Draw(void)
 		return;
 	}
 
-	if (TextDotX <= 512) {
+	if(0){//if (TextDotX <= 512) {
 		roto_surface = rotozoomSurfaceXY(sdl_rgbsurface, 0.0, 512.0*1.33333/TextDotX, 512.0/TextDotY, 0);
 	}
-	if (roto_surface) {
+
+	if(0){//if (roto_surface) {
 		ret = SDL_BlitSurface(roto_surface, NULL, sdl_surface, NULL);
 		SDL_FreeSurface(roto_surface);
 	} else {
@@ -679,6 +693,7 @@ WinDraw_Draw(void)
 	if (ret < 0) {
 		printf("SDL_BlitSurface() failed %d\n", ret);
 	}
+//#endif
 #else
 	int x, y, Bpp;
 //	WORD c, *p, *p2, dummy, *dst16;
@@ -735,11 +750,15 @@ WinDraw_Draw(void)
 		}
 	}
 #endif
-
+#endif
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 	SDL_UpdateWindowSurface(sdl_window);
 #else
+#ifdef __LIBRETRO__
+videoBuffer=(unsigned short int *)ScrBuf;//sdl_surface->pixels;
+#else
 	SDL_UpdateRect(sdl_surface, 0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+#endif //libretro
 #endif
 
 #endif
@@ -1936,7 +1955,11 @@ void WinDraw_DrawMenu(int menu_state, int mkey_pos, int mkey_y, int *mval_y)
 	SDL_BlitSurface(menu_surface, NULL, sdl_surface, NULL);
 	SDL_UpdateWindowSurface(sdl_window);
 #else
+#ifdef __LIBRETRO__
+videoBuffer=(unsigned short int *)menu_surface->pixels;//sdl_surface->pixels;
+#else
 	SDL_UpdateRect(menu_surface, 0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+#endif
 #endif
 	
 #endif
@@ -1992,7 +2015,11 @@ void WinDraw_DrawMenufile(struct menu_flist *mfl)
 	SDL_BlitSurface(menu_surface, NULL, sdl_surface, NULL);
 	SDL_UpdateWindowSurface(sdl_window);
 #else
+#ifdef __LIBRETRO__
+videoBuffer=(unsigned short int *)menu_surface->pixels;//sdl_surface->pixels;
+#else
 	SDL_UpdateRect(menu_surface, 0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+#endif
 #endif
 
 #endif

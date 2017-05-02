@@ -35,6 +35,10 @@
 
 #include "dosio.h"
 
+#ifdef __LIBRETRO__
+extern char slash;
+#endif
+
 static char	curpath[MAX_PATH+32] = "";
 static LPSTR	curfilep = curpath;
 
@@ -260,7 +264,7 @@ getFileName(LPSTR filename)
 	LPSTR p, q;
 
 	for (p = q = filename; *p != '\0'; p++)
-		if (*p == '/')
+		if (*p == slash/*'/'*/)
 			q = p + 1;
 	return q;
 }
@@ -271,7 +275,7 @@ cutFileName(LPSTR filename)
 	LPSTR p, q;
 
 	for (p = filename, q = NULL; *p != '\0'; p++)
-		if (*p == '/')
+		if (*p == slash/*'/'*/)
 			q = p + 1;
 	if (q != NULL)
 		*q = '\0';
@@ -375,7 +379,7 @@ cutyen(LPSTR str)
 {
 	int pos = strlen(str) - 1;
 
-	if ((pos > 0) && (str[pos] == '/'))
+	if ((pos > 0) && (str[pos] == slash/*'/'*/))
 		str[pos] = '\0';
 }
 
@@ -385,12 +389,12 @@ plusyen(LPSTR str, int len)
 	int	pos = strlen(str);
 
 	if (pos) {
-		if (str[pos-1] == '/')
+		if (str[pos-1] == slash/*'/'*/)
 			return;
 	}
 	if ((pos + 2) >= len)
 		return;
-	str[pos++] = '/';
+	str[pos++] = slash/*'/'*/;
 	str[pos] = '\0';
 }
 
@@ -404,7 +408,7 @@ fname_mix(LPSTR str, LPSTR mix, int size)
 	char check;
 
 	cutFileName(str);
-	if (mix[0] == '/')
+	if (mix[0] == slash/*'/'*/)
 		str[0] = '\0';
 
 	len = strlen(str);
@@ -417,12 +421,12 @@ fname_mix(LPSTR str, LPSTR mix, int size)
 
 		if (c == check) {
 			/* current dir */
-			if (mix[0] == '/') {
+			if (mix[0] == slash/*'/'*/) {
 				mix++;
 				continue;
 			}
 			/* parent dir */
-			if (mix[0] == '.' && mix[1] == '/') {
+			if (mix[0] == '.' && mix[1] == slash/*'/'*/) {
 				mix += 2;
 				cutyen(str);
 				cutFileName(str);
@@ -431,7 +435,7 @@ fname_mix(LPSTR str, LPSTR mix, int size)
 				continue;
 			}
 		}
-		if (c == '/')
+		if (c == slash/*'/'*/)
 			check = '.';
 		else
 			check = 0;

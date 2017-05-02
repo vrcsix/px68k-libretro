@@ -362,6 +362,7 @@ cpu_readmem24(DWORD addr)
 
 	v = rm_main(addr);
 	if (BusErrFlag & 1) {
+		printf("func = %s addr = %x flag = %d\n", __func__, addr, BusErrFlag);
 		Memory_ErrTrace();
 		BusError(addr, 0);
 	}
@@ -383,6 +384,7 @@ cpu_readmem24_word(DWORD addr)
 	v = rm_main(addr++) << 8;
 	v |= rm_main(addr);
 	if (BusErrFlag & 1) {
+		printf("func = %s addr = %x flag = %d\n", __func__, addr, BusErrFlag);
 		Memory_ErrTrace();
 		BusError(addr, 0);
 	}
@@ -398,6 +400,7 @@ cpu_readmem24_dword(DWORD addr)
 
 	if (addr & 1) {
 		BusErrFlag = 3;
+		printf("func = %s addr = %x\n", __func__, addr);
 		return 0;
 	}
 
@@ -477,6 +480,7 @@ rm_e82(DWORD addr)
 static BYTE FASTCALL
 rm_buserr(DWORD addr)
 {
+    printf("func = %s addr = %x flag = %d\n", __func__, addr, BusErrFlag);
 
 	BusErrFlag = 1;
 	BusErrAdr = addr;
@@ -490,7 +494,8 @@ rm_buserr(DWORD addr)
 void Memory_Init(void)
 {
 
-	cpu_setOPbase24((DWORD)C68k_Get_Reg(&C68K, C68K_PC));
+//        cpu_setOPbase24((DWORD)C68k_Get_Reg(&C68K, C68K_PC));
+    cpu_setOPbase24((DWORD)C68k_Get_PC(&C68K));
 }
 
 void FASTCALL
@@ -582,7 +587,7 @@ AdrError(DWORD adr, DWORD unknown)
 
 	(void)adr;
 	(void)unknown;
-	printf("AdrError: %d\n", adr);
+	printf("AdrError: %x\n", adr);
 	//	assert(0);
 }
 
@@ -593,7 +598,7 @@ BusError(DWORD adr, DWORD unknown)
 	(void)adr;
 	(void)unknown;
 
-	printf("BusError: %d\n", adr);
+	printf("BusError: %x\n", adr);
 	BusErrHandling = 1;
 	//assert(0);
 }

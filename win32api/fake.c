@@ -60,14 +60,14 @@ PostQuitMessage(int m)
 
 	exit(m);
 }
-
+#ifndef _WIN32
 DWORD WINAPI
 GetLastError(VOID)
 {
 
 	return NO_ERROR;
 }
-
+#endif
 BOOL WINAPI
 SetEndOfFile(HANDLE hFile)
 {

@@ -131,6 +131,12 @@ static BYTE solveBOOL(char *str) {
 	return(0);
 }
 
+#ifdef __LIBRETRO__
+extern char retro_system_conf[512];
+extern char slash;
+
+#endif
+
 int
 set_modulepath(char *path, size_t len)
 {
@@ -191,14 +197,23 @@ set_dir:
         sprintf(winx68k_ini, "/var/mobile/px68k/config");
         return 0;
 #endif
-
+#ifdef __LIBRETRO__
+        puts("Libretro...");
+        sprintf(path,retro_system_conf);
+        sprintf(winx68k_ini, "%s%cconfig",retro_system_conf,slash);
+        return 0;
+#endif
 	homepath = getenv("HOME");
 	if (homepath == 0)
 		homepath = ".";
 
 	snprintf(path, len, "%s/%s", homepath, ".keropi");
 	if (stat(path, &sb) < 0) {
+#ifdef _WIN32
+		if (mkdir(path) < 0) {
+#else
 		if (mkdir(path, 0700) < 0) {
+#endif
 			perror(path);
 			return 1;
 		}

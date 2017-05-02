@@ -69,7 +69,10 @@ enum {
 	HTYPE_CONSOLE,
 	HTYPE_KEY,
 };
-
+#ifdef _WIN32
+typedef unsigned int u_int;
+#define bzero(s,d) memset(s,1,d)
+#endif
 struct internal_handle {
 	void	*p;
 	u_int	flags;
@@ -107,7 +110,7 @@ struct internal_file {
 #define	DPRF(arg)
 #endif	/* DEBUG */
 
-
+#ifndef _WIN32
 DWORD WINAPI
 GetTickCount(void)
 {
@@ -116,7 +119,7 @@ GetTickCount(void)
 	gettimeofday(&tv, 0);
 	return tv.tv_usec / 1000 + tv.tv_sec * 1000;
 }
-
+#endif
 BOOL WINAPI
 ReadFile(HANDLE h, PVOID buf, DWORD len, PDWORD lp, LPOVERLAPPED lpov)
 {
@@ -213,7 +216,7 @@ SetFilePointer(HANDLE h, LONG pos, PLONG newposh, DWORD whence)
 	newpos = lseek(fd, pos, whence);
 	return newpos;
 }
-
+#ifndef _WIN32
 BOOL WINAPI
 CloseHandle(HANDLE h)
 {
@@ -233,7 +236,7 @@ CloseHandle(HANDLE h)
 	LocalFree(h);
 	return TRUE;
 }
-
+#endif
 DWORD WINAPI
 GetFileAttributes(LPCSTR path)
 {
