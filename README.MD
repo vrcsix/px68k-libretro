@@ -4,7 +4,7 @@ forked from https://github.com/hissorii/px68k
 backported c68k core from https://github.com/kenyahiro/px68k/ 
 (fork of https://github.com/hissorii/px68k using recent c68k yabause core to support X64 build)
 
-All credit goes to hissorii and kenyahiro.
+All credit goes to hissorii ( and kenyahiro for updating c68k core) .
 
 How to use :
 
