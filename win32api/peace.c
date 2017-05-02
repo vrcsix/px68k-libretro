@@ -110,16 +110,16 @@ struct internal_file {
 #define	DPRF(arg)
 #endif	/* DEBUG */
 
-#ifndef _WIN32
+
 DWORD WINAPI
-GetTickCount(void)
+FAKE_GetTickCount(void)
 {
 	struct timeval tv;
 
 	gettimeofday(&tv, 0);
 	return tv.tv_usec / 1000 + tv.tv_sec * 1000;
 }
-#endif
+
 BOOL WINAPI
 ReadFile(HANDLE h, PVOID buf, DWORD len, PDWORD lp, LPOVERLAPPED lpov)
 {
@@ -169,7 +169,9 @@ CreateFile(LPCSTR filename, DWORD rdwr, DWORD share,
 	(void)sap;
 	(void)flags;
 	(void)template;
-
+#ifdef _WIN32
+ 	fmode |=O_BINARY;
+#endif
 	switch (rdwr & (GENERIC_READ|GENERIC_WRITE)) {
 	case GENERIC_READ:
 		fmode |= O_RDONLY;
@@ -216,9 +218,9 @@ SetFilePointer(HANDLE h, LONG pos, PLONG newposh, DWORD whence)
 	newpos = lseek(fd, pos, whence);
 	return newpos;
 }
-#ifndef _WIN32
+
 BOOL WINAPI
-CloseHandle(HANDLE h)
+FAKE_CloseHandle(HANDLE h)
 {
 	switch (handletype(h)) {
 	case HTYPE_FILE:
@@ -236,7 +238,7 @@ CloseHandle(HANDLE h)
 	LocalFree(h);
 	return TRUE;
 }
-#endif
+
 DWORD WINAPI
 GetFileAttributes(LPCSTR path)
 {

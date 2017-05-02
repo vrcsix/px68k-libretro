@@ -53,6 +53,39 @@ void retro_set_input_state(retro_input_state_t cb) { input_state_cb = cb; }
 
 #define LOGI printf
 
+static char CMDFILE[512];
+
+int loadcmdfile(char *argv)
+{
+    int res=0;
+
+    FILE *fp = fopen(argv,"r");
+
+    if( fp != NULL )
+    {
+	if ( fgets (CMDFILE , 512 , fp) != NULL )
+		res=1;	
+	fclose (fp);
+    }
+
+    return res;
+}
+
+int HandleExtension(char *path,char *ext)
+{
+   int len = strlen(path);
+
+   if (len >= 4 &&
+         path[len-4] == '.' &&
+         path[len-3] == ext[0] &&
+         path[len-2] == ext[1] &&
+         path[len-1] == ext[2])
+   {
+      return 1;
+   }
+
+   return 0;
+}
 //Args for experimental_cmdline
 static char ARGUV[64][1024];
 static unsigned char ARGUC=0;
@@ -81,9 +114,21 @@ void Add_Option(const char* option)
 
 int pre_main(const char *argv)
 {
-   int i;
+   int i=0;
    int Only1Arg;
 
+   if (strlen(argv) > strlen("cmd"))
+   {
+      if( HandleExtension((char*)argv,"cmd") || HandleExtension((char*)argv,"CMD"))
+          i=loadcmdfile((char*)argv);     
+   }
+
+   if(i==1)
+   {
+      parse_cmdline(CMDFILE);      
+      LOGI("Starting game from command line :%s\n",CMDFILE);  
+   }
+   else
    parse_cmdline(argv); 
 
    Only1Arg = (strcmp(ARGUV[0],"px68k") == 0) ? 0 : 1;

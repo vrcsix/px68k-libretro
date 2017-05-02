@@ -193,7 +193,7 @@ short
 file_close(FILEH handle)
 {
 
-	CloseHandle(handle);
+	FAKE_CloseHandle(handle);
 	return 0;
 }
 

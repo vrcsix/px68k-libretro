@@ -137,7 +137,7 @@ typedef	void *		DRAWITEMSTRUCT;
 #define	wsprintf		sprintf
 #define	ZeroMemory(d,n)		memset(d,0,n)
 #define	CopyMemory(d,s,n)	memcpy(d,s,n)
-#define	timeGetTime()		GetTickCount()
+#define	timeGetTime()		FAKE_GetTickCount()
 
 /*
  * WIN32 structure
@@ -198,7 +198,7 @@ int	WINAPI MessageBox(HWND, LPCSTR, LPCSTR, UINT);
 void	WINAPI PostQuitMessage(int);
 BOOL	WINAPI WritePrivateProfileString(LPCSTR, LPCSTR, LPCSTR, LPCSTR);
 
-DWORD	WINAPI GetLastError(void);
+DWORD	WINAPI FAKE_GetLastError(void);
 BOOL	WINAPI SetEndOfFile(HANDLE hFile);
 #ifdef __cplusplus
 };

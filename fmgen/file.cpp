@@ -44,7 +44,7 @@ bool FileIO::Open(const char* filename, uint flg)
 	flags = (flg & readonly) | (hfile == INVALID_HANDLE_VALUE ? 0 : open);
 	if (!(flags & open))
 	{
-		switch (GetLastError())
+		switch (FAKE_GetLastError())
 		{
 		case ERROR_FILE_NOT_FOUND:		error = file_not_found; break;
 		case ERROR_SHARING_VIOLATION:	error = sharing_violation; break;
@@ -111,7 +111,7 @@ void FileIO::Close()
 {
 	if (GetFlags() & open)
 	{
-		CloseHandle(hfile);
+		FAKE_CloseHandle(hfile);
 		flags = 0;
 	}
 }
