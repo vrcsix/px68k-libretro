@@ -495,7 +495,13 @@ void Memory_Init(void)
 {
 
 //        cpu_setOPbase24((DWORD)C68k_Get_Reg(&C68K, C68K_PC));
+	#ifdef CYCLONE
+
+	cpu_setOPbase24((DWORD)m68000_get_reg(M68K_PC));
+
+	#else
     cpu_setOPbase24((DWORD)C68k_Get_PC(&C68K));
+#endif
 }
 
 void FASTCALL

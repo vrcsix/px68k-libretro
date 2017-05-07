@@ -233,8 +233,8 @@ cb_start:
 //printf("%d %d \n",len,lena+lenb);
 //	_MixAudio(stream, buf, len, _MIX_MAXVOLUME);
 	signed short int *ptr=(signed short int *)buf;
-memcpy(&soundbuf[0],buf,735*4);
-	audio_batch_cb(soundbuf,735);
+memcpy(&soundbuf[0],buf,len);
+	audio_batch_cb(soundbuf,len/4);
 	bef = now;
 }
 

@@ -12,6 +12,11 @@ else ifneq ($(findstring MINGW,$(shell uname -a)),)
 endif
 endif
 
+ifdef CYCLONE
+CFLAGS += -DCYCLONE
+CXXFLAGS += -DCYCLONE
+endif
+
 TARGET_NAME := px68k
 
 ifeq ($(platform), unix)
@@ -28,10 +33,26 @@ ifeq ($(platform), unix)
 else ifneq (,$(findstring android,$(platform)))
    	TARGET := $(TARGET_NAME)_libretro_android.so
    	fpic = -fPIC
-   	SHARED := -lstdc++ -llog -lz -shared -Wl,--version-script=link.T -Wl,--no-undefined
-	CFLAGS +=  -g -O2 
+   	SHARED := -lstdc++ -llog -shared -Wl,--version-script=link.T -Wl,--no-undefined
+	CFLAGS +=  -g -O2
+ 	CXXFLAGS = -g -O2  -fno-merge-constants 
    	CC = arm-linux-androideabi-gcc
    	CXX = arm-linux-androideabi-g++
+	ENDIANNESS_DEFINES := -DLSB_FIRST
+	FLAGS += -D__LINUX__ -DARM -marm
+# crosspi arm
+else ifneq (,$(findstring crosspi,$(platform)))
+	CC = arm-linux-gnueabihf-gcc
+	CXX = arm-linux-gnueabihf-g++
+	CC_AS = arm-linux-gnueabihf-as
+CPU_FLAGS += -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard
+	CFLAGS += -g -O2 
+	CXXFLAGS += -g -O2  -fno-merge-constants 
+	TARGET := $(TARGET_NAME)_libretro.so
+	fpic := -fPIC
+	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
+	ENDIANNESS_DEFINES := -DLSB_FIRST
+	FLAGS += -D__LINUX__ -DARM -marm
 # cross Windows
 else ifeq ($(platform), wincross64)
 	TARGET := $(TARGET_NAME)_libretro.dll
@@ -59,16 +80,24 @@ CDEBUGFLAGS+=-DPX68K_VERSION=0.15
 EXTRA_INCLUDES= -I./libretro -I./x68k -I./fmgen -I./win32api
 FLAGS += $(CDEBUGFLAGS)
 
-CPUOBJS= x68k/d68k.o m68000/m68000.o
 C68KOBJS= m68000/c68k/c68k.o m68000/c68k/c68kexec.o
+CYCLONEOBJS = m68000/cyclone.o
+
+ifdef CYCLONE
+CPUOBJS= x68k/d68k.o m68000/m68000.o $(CYCLONEOBJS)
+else
+CPUOBJS= x68k/d68k.o m68000/m68000.o $(C68KOBJS)
+endif
 
 X68KOBJS= x68k/adpcm.o x68k/bg.o x68k/crtc.o x68k/dmac.o x68k/fdc.o x68k/fdd.o x68k/disk_d88.o x68k/disk_dim.o x68k/disk_xdf.o x68k/gvram.o x68k/ioc.o x68k/irqh.o x68k/mem_wrap.o x68k/mercury.o x68k/mfp.o x68k/palette.o x68k/midi.o x68k/pia.o x68k/rtc.o x68k/sasi.o x68k/scc.o x68k/scsi.o x68k/sram.o x68k/sysport.o x68k/tvram.o
 FMGENOBJS= fmgen/fmgen.o fmgen/fmg_wrap.o fmgen/file.o fmgen/fmtimer.o fmgen/opm.o fmgen/opna.o fmgen/psg.o
-X11OBJS= libretro/joystick.o libretro/juliet.o libretro/keyboard.o libretro/mouse.o libretro/prop.o libretro/status.o libretro/timer.o libretro/dswin.o libretro/windraw.o libretro/winui.o libretro/about.o libretro/common.o
-X11CXXOBJS= libretro/winx68k.o
+RETROCOBJS= libretro/joystick.o libretro/juliet.o libretro/keyboard.o libretro/mouse.o libretro/prop.o libretro/status.o libretro/timer.o libretro/dswin.o libretro/windraw.o libretro/winui.o libretro/about.o libretro/common.o
+RETROCXXOBJS= libretro/winx68k.o
 WIN32APIOBJS= win32api/dosio.o win32api/fake.o win32api/peace.o
 
-OBJECTS := $(X68KOBJS) $(X11OBJS) $(WIN32APIOBJS) $(CPUOBJS)  $(C68KOBJS) $(FMGENOBJS) $(X11CXXOBJS) libretro.o 
+OBJECTS := $(X68KOBJS) $(RETROCOBJS) $(WIN32APIOBJS) $(CPUOBJS)  $(FMGENOBJS) $(RETROCXXOBJS) libretro.o 
+
+#$(C68KOBJS)
 
 all: $(TARGET)
 
@@ -85,8 +114,8 @@ WARNINGS :=
 	
 FLAGS += -D__LIBRETRO__ $(ENDIANNESS_DEFINES) $(WARNINGS) $(fpic) 
 
-CXXFLAGS += $(FLAGS) -fpermissive
-CFLAGS += $(FLAGS) -std=gnu99
+CXXFLAGS += $(FLAGS) -fpermissive $(CPU_FLAGS)
+CFLAGS += $(FLAGS) -std=gnu99 $(CPU_FLAGS)
 
 $(TARGET): $(OBJECTS)
 	$(CXX) -o $@ $^ $(LDFLAGS)
@@ -96,6 +125,10 @@ $(TARGET): $(OBJECTS)
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS)
+
+%.o: %.s
+	$(CXX) $(CFLAGS)  -c $^ -o $@
+
 
 clean:
 	rm -f $(TARGET) $(OBJECTS)

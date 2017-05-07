@@ -223,7 +223,14 @@ if (hddtrace&&((SASI_Phase!=3)||(adr!=0xe96001))) {
 FILE *fp;
 fp=fopen("_trace68.txt", "a");
 //fprintf(fp, "Read  - Adr:%08X  Ret:%02X  Phase:%d BufPtr:%d  (Time:%08X)  @ $%08X\n", adr, ret, SASI_Phase, SASI_BufPtr, timeGetTime(), C68k_Get_Reg(&C68K, C68K_PC));
+	#ifdef CYCLONE
+	
+	fprintf(fp, "Read  - Adr:%08X  Ret:%02X  Phase:%d BufPtr:%d  (Time:%08X)  @ $%08X\n", adr, ret, SASI_Phase, SASI_BufPtr, timeGetTime(), m68000_get_reg(M68K_PC));
+
+
+	#else
 fprintf(fp, "Read  - Adr:%08X  Ret:%02X  Phase:%d BufPtr:%d  (Time:%08X)  @ $%08X\n", adr, ret, SASI_Phase, SASI_BufPtr, timeGetTime(), C68k_Get_PC(&C68K));
+#endif
 fclose(fp);
 }
 
@@ -359,7 +366,14 @@ if (hddtrace&&((SASI_Phase!=3)||(adr!=0xe96001))) {
 FILE *fp;
 fp=fopen("_trace68.txt", "a");
 //fprintf(fp, "Write - Adr:%08X Data:%02X  Phase:%d  (Time:%08X)  @ $%08X\n", adr, data, SASI_Phase, timeGetTime(), C68k_Get_Reg(&C68K, C68K_PC));
+	#ifdef CYCLONE
+
+	fprintf(fp, "Write - Adr:%08X Data:%02X  Phase:%d  (Time:%08X)  @ $%08X\n", adr, data, SASI_Phase, timeGetTime(), m68000_get_reg(M68K_PC));
+
+
+	#else
 fprintf(fp, "Write - Adr:%08X Data:%02X  Phase:%d  (Time:%08X)  @ $%08X\n", adr, data, SASI_Phase, timeGetTime(), C68k_Get_PC(&C68K));
+#endif
 fclose(fp);
 }
 	if ( (adr==0xe96007)&&(SASI_Phase==0) )

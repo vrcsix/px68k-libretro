@@ -5,7 +5,11 @@
 #include "common.h"
 #include "../m68000/m68000.h"
 #include "irqh.h"
+#ifdef CYCLONE
+extern struct Cyclone m68k;
+typedef signed int  FASTCALL C68K_INT_CALLBACK(signed int level);
 
+#endif
 	BYTE	IRQH_IRQ[8];
 	void	*IRQH_CallBack[8];
 
@@ -54,12 +58,22 @@ void IRQH_IRQCallBack(BYTE irq)
 #endif
 	IRQH_IRQ[irq&7] = 0;
 int i;
+	#ifdef CYCLONE
+	m68k.irq =0;
+	#else
 C68k_Set_IRQ(&C68K, 0);
+	#endif
 	for (i=7; i>0; i--)
 	{
 	    if (IRQH_IRQ[i])
 	    {
+#ifdef CYCLONE
+
+	m68k.irq = i;
+
+	#else
 		C68k_Set_IRQ(&C68K, i);
+#endif
 		return;
 	    }
 	}
@@ -103,7 +117,13 @@ void IRQH_Int(BYTE irq, void* handler)
 	{
 	    if (IRQH_IRQ[i])
 	    {
+#ifdef CYCLONE
+
+	m68k.irq = i;
+
+	#else
 		C68k_Set_IRQ(&C68K, i);
+#endif
 		return;
 	    }
 	}
@@ -119,7 +139,7 @@ void IRQH_Int(BYTE irq, void* handler)
 #endif
 }
 
-s32 my_irqh_callback(s32 level)
+signed int  my_irqh_callback(signed int  level)
 {
 #if 0
     int i;
@@ -145,10 +165,16 @@ s32 my_irqh_callback(s32 level)
     {
 	if (IRQH_IRQ[i])
 	{
+	#ifdef CYCLONE
+
+	m68k.irq = i;
+	    break;
+	#else
 	    C68k_Set_IRQ(&C68K, i);
 	    break;
+	#endif
 	}
     }
 
-    return (s32)vect;
+    return (signed int )vect;
 }

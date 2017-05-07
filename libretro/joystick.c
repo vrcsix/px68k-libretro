@@ -99,12 +99,12 @@ void FASTCALL Joystick_Update(int is_menu, int key)
 	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN))ret0 ^= JOY_DOWN;
 	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A) )ret0 ^= JOY_TRG1;
 	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B) )ret0 ^= JOY_TRG2;
-	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT))ret0 ^= JOY_TRG3;
-	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START) )ret0 ^= JOY_TRG4;
-	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X) )ret0 ^= JOY_TRG5;
-	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y) )ret0 ^= JOY_TRG6;
-	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L))ret0 ^= JOY_TRG7;
-	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R) )ret0 ^= JOY_TRG8;
+	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT))ret0 ^= (JOY_LEFT | JOY_RIGHT);	// [RUN]JOY_TRG3;
+	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START) )ret0 ^= (JOY_UP | JOY_DOWN);	// [SELECT]JOY_TRG4;
+	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X) )ret0 ^= JOY_TRG1;//JOY_TRG5;
+	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y) )ret0 ^= JOY_TRG2;//JOY_TRG6;
+	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L))ret0 ^= JOY_TRG1;//JOY_TRG7;
+	if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R) )ret0 ^= JOY_TRG2;//JOY_TRG8;
 
 	JoyDownState0 = ~(ret0 ^ pre_ret0) | ret0;
 	JoyUpState0 = (ret0 ^ pre_ret0) & ret0;

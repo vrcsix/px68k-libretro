@@ -14,6 +14,9 @@
 #define LOGI printf
 #define RENDER16B 1
 
+#define SOUNDRATE 44100.0
+#define SNDSZ 795
+
 char RPATH[512];
 char RETRO_DIR[512];
 const char *retro_save_directory;
@@ -311,7 +314,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
 {
 //FIXME handle vice PAL/NTSC
    struct retro_game_geometry geom = { retrow, retroh,800, 600 ,4.0 / 3.0 };
-   struct retro_system_timing timing = { 60.0, 44100.0 };
+   struct retro_system_timing timing = { 55.45, SOUNDRATE };
 
    info->geometry = geom;
    info->timing   = timing;
@@ -519,7 +522,7 @@ void retro_run(void)
 
 	exec_app_retro();
 	
-	raudio_callback(NULL, NULL,735*4);
+	raudio_callback(NULL, NULL,SNDSZ*4);
 
         video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
 

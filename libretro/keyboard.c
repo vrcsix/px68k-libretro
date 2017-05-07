@@ -354,7 +354,7 @@ void send_keycode(BYTE code, int flag)
 
 static BYTE get_x68k_keycode(DWORD wp)
 {
-	if (wp < KEYTABLE_MAX) {
+	if (wp < KEYTABLE_MAX/2) {
 		return KeyTable[wp];
 	}
 
@@ -481,7 +481,7 @@ Keyboard_KeyDown(DWORD wp)
 
 	printf("Keyboard_KeyDown: ");
 	printf("wp=0x%x, code=0x%x\n", wp, code);
-	printf("RETROK_UP: 0x%x", RETROK_UP);
+//	printf("RETROK_UP: 0x%x", RETROK_UP);
 
 #if 0
 	if (code != NC) {
@@ -495,7 +495,7 @@ Keyboard_KeyDown(DWORD wp)
 #else
 	send_keycode(code, P6K_DOWN);
 #endif
-
+//return;
 	printf("JoyKeyState: 0x%x\n", JoyKeyState);
 
 	switch (wp) {
@@ -518,6 +518,13 @@ Keyboard_KeyDown(DWORD wp)
 	case RETROK_RIGHT:
 		if (!(JoyKeyState&JOY_LEFT))
 			JoyKeyState |= JOY_RIGHT;
+		break;
+	case RETROK_a:
+		JoyKeyState |= (JOY_LEFT | JOY_RIGHT);	// [RUN]
+		break;
+
+	case RETROK_s:
+		JoyKeyState |= (JOY_UP | JOY_DOWN);		// [SELECT]
 		break;
 
 	case RETROK_z:
@@ -572,7 +579,7 @@ Keyboard_KeyUp(DWORD wp)
 #else
 	send_keycode(code, P6K_UP);
 #endif
-
+//return;
 	printf("JoyKeyState: 0x%x\n", JoyKeyState);
 
 	switch(wp) {
@@ -590,6 +597,14 @@ Keyboard_KeyUp(DWORD wp)
 
 	case RETROK_RIGHT:
 		JoyKeyState &= ~JOY_RIGHT;
+		break;
+
+	case RETROK_a:
+		JoyKeyState &= ~(JOY_LEFT | JOY_RIGHT);	// [RUN]
+		break;
+
+	case RETROK_s:
+		JoyKeyState &= ~(JOY_UP | JOY_DOWN);	// [SELECT]
 		break;
 
 	case RETROK_z:
