@@ -49,21 +49,20 @@ BYTE rsndbuf[PCMBUF_SIZE];
 
 int audio_fd = 1;
 
- void raudio_callback(void *userdata, unsigned char *stream, int len);
+void raudio_callback(void *userdata, unsigned char *stream, int len);
 
 #ifndef NOSOUND
-
 
 int
 DSound_Init(unsigned long rate, unsigned long buflen)
 {
 	DWORD samples;
 
-	if (playing) {
+	if (playing)
 		return FALSE;
-	}
 
-	if (rate == 0) {
+	if (rate == 0)
+   {
 		audio_fd = -1;
 		return TRUE;
 	}
@@ -79,45 +78,39 @@ DSound_Init(unsigned long rate, unsigned long buflen)
 void
 DSound_Play(void)
 {
-//	if (audio_fd >= 0);
-
+   //	if (audio_fd >= 0);
 }
 
 void
 DSound_Stop(void)
 {
-//	if (audio_fd >= 0);
-
+   //	if (audio_fd >= 0);
 }
 
 int
 DSound_Cleanup(void)
 {
 	playing = FALSE;
-	if (audio_fd >= 0) {
 
+	if (audio_fd >= 0)
 		audio_fd = -1;
-	}
+
 	return TRUE;
 }
 
 static void sound_send(int length)
 {
-	int rate;
+   int rate = 0;
 
-	rate = 0;
-
-	ADPCM_Update((short *)pbwp, length, rate, pbsp, pbep);
-	OPM_Update((short *)pbwp, length, rate, pbsp, pbep);
+   ADPCM_Update((short *)pbwp, length, rate, pbsp, pbep);
+   OPM_Update((short *)pbwp, length, rate, pbsp, pbep);
 #ifndef	NO_MERCURY
-	//Mcry_Update((short *)pcmbufp, length);
+   //Mcry_Update((short *)pcmbufp, length);
 #endif
 
-	pbwp += length * sizeof(WORD) * 2;
-	if (pbwp >= pbep) {
-		pbwp = pbsp + (pbwp - pbep);
-	}
-
+   pbwp += length * sizeof(WORD) * 2;
+   if (pbwp >= pbep)
+      pbwp = pbsp + (pbwp - pbep);
 }
 
 void FASTCALL DSound_Send0(long clock)
@@ -125,18 +118,20 @@ void FASTCALL DSound_Send0(long clock)
 	int length = 0;
 	int rate;
 
-	if (audio_fd < 0) {
+	if (audio_fd < 0)
 		return;
-	}
 
 	DSound_PreCounter += (ratebase * clock);
-	while (DSound_PreCounter >= 10000000L) {
+
+	while (DSound_PreCounter >= 10000000L)
+   {
 		length++;
 		DSound_PreCounter -= 10000000L;
 	}
-	if (length == 0) {
+
+	if (length == 0)
 		return;
-	}
+
 	sound_send(length);
 }
 
@@ -144,98 +139,89 @@ static void FASTCALL DSound_Send(int length)
 {
 	int rate;
 
-	if (audio_fd < 0) {
+	if (audio_fd < 0)
 		return;
-	}
 	sound_send(length);
 }
 
 void
 raudio_callback(void *userdata, unsigned char *stream, int len)
 {
-	int lena, lenb, datalen, rate;
-	BYTE *buf;
-	static DWORD bef;
-	DWORD now;
+   int lena, lenb, datalen, rate;
+   BYTE *buf;
 
-	now = timeGetTime();
-
-	//p6logd("tdiff %4d : len %d ", now - bef, len);
-
-//printf("tdiff %4d : len %d \n", now - bef, len);
 cb_start:
-	if (pbrp <= pbwp) {
-		// pcmbuffer
-		// +---------+-------------+----------+
-		// |         |/////////////|          |
-		// +---------+-------------+----------+
-		// A         A<--datalen-->A          A
-		// |         |             |          |
-		// pbsp     pbrp          pbwp       pbep
+   if (pbrp <= pbwp)
+   {
+      // pcmbuffer
+      // +---------+-------------+----------+
+      // |         |/////////////|          |
+      // +---------+-------------+----------+
+      // A         A<--datalen-->A          A
+      // |         |             |          |
+      // pbsp     pbrp          pbwp       pbep
 
-		datalen = pbwp - pbrp;
-		if (datalen < len) {
-			// needs more data
+      datalen = pbwp - pbrp;
 
-			DSound_Send((len - datalen) / 4);
+      // needs more data
+      if (datalen < len)
+         DSound_Send((len - datalen) / 4);
 
-		}
 #if 0
-		datalen = pbwp - pbrp;
-		if (datalen < len) {
-			printf("xxxxx not enough sound data xxxxx\n");
-		}
+      datalen = pbwp - pbrp;
+      if (datalen < len)
+         printf("xxxxx not enough sound data xxxxx\n");
 #endif
-		if (pbrp > pbwp) {
-			// chage to TYPEC or TYPED
-			goto cb_start;
-		}
 
-		buf = pbrp;
-		pbrp += len;
-		//printf("TYPEA: ");
+      // change to TYPEC or TYPED
+      if (pbrp > pbwp)
+         goto cb_start;
 
-	} else {
-		// pcmbuffer
-		// +---------+-------------+----------+
-		// |/////////|             |//////////|
-		// +------+--+-------------+----------+
-		// <-lenb->  A             <---lena--->
-		// A         |             A          A
-		// |         |             |          |
-		// pbsp     pbwp          pbrp       pbep
+      buf = pbrp;
+      pbrp += len;
+      //printf("TYPEA: ");
+   }
+   else
+   {
+      // pcmbuffer
+      // +---------+-------------+----------+
+      // |/////////|             |//////////|
+      // +------+--+-------------+----------+
+      // <-lenb->  A             <---lena--->
+      // A         |             A          A
+      // |         |             |          |
+      // pbsp     pbwp          pbrp       pbep
 
-		lena = pbep - pbrp;
-		if (lena >= len) {
-			buf = pbrp;
-			pbrp += len;
-			//printf("TYPEC: ");
-		} else {
-			lenb = len - lena;
-			if (pbwp - pbsp < lenb) {
+      lena = pbep - pbrp;
+      if (lena >= len)
+      {
+         buf = pbrp;
+         pbrp += len;
+         //printf("TYPEC: ");
+      }
+      else
+      {
+         lenb = len - lena;
 
-				DSound_Send((lenb - (pbwp - pbsp)) / 4);
+         if (pbwp - pbsp < lenb)
+            DSound_Send((lenb - (pbwp - pbsp)) / 4);
 
-			}
 #if 0
-			if (pbwp - pbsp < lenb) {
-				printf("xxxxx not enough sound data xxxxx\n");
-			}
+         if (pbwp - pbsp < lenb)
+            printf("xxxxx not enough sound data xxxxx\n");
 #endif
-			memcpy(rsndbuf, pbrp, lena);
-			memcpy(&rsndbuf[lena], pbsp, lenb);
-			buf = rsndbuf;
-			pbrp = pbsp + lenb;
-			//printf("TYPED: ");
-		}
-	}
+         memcpy(rsndbuf, pbrp, lena);
+         memcpy(&rsndbuf[lena], pbsp, lenb);
+         buf = rsndbuf;
+         pbrp = pbsp + lenb;
+         //printf("TYPED: ");
+      }
+   }
 
-//printf("%d %d \n",len,lena+lenb);
-//	_MixAudio(stream, buf, len, _MIX_MAXVOLUME);
-	signed short int *ptr=(signed short int *)buf;
-memcpy(&soundbuf[0],buf,len);
-	audio_batch_cb(soundbuf,len/4);
-	bef = now;
+   signed short int *ptr=(signed short int *)buf;
+   memcpy(&soundbuf[0],buf,len);
+   audio_batch_cb(soundbuf,len/4);
+
 }
 
 #else	/* NOSOUND */

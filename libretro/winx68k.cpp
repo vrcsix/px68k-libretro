@@ -915,29 +915,28 @@ extern "C" void exec_app_retro(){
 	//}
 }
 
-extern "C" void end_loop_retro(){
-//end_loop:
-	Memory_WriteB(0xe8e00d, 0x31);	// SRAMœñ€­¹þ€ßµö²Ä
-	Memory_WriteD(0xed0040, Memory_ReadD(0xed0040)+1); // ÀÑ»»²ÔÆ¯»þŽÖ(min.)
-	Memory_WriteD(0xed0044, Memory_ReadD(0xed0044)+1); // ÀÑ»»µ¯Æ°²ó¿ô
+extern "C" void end_loop_retro(void)
+{
+   //end_loop:
+   Memory_WriteB(0xe8e00d, 0x31);	// SRAMœñ€­¹þ€ßµö²Ä
+   Memory_WriteD(0xed0040, Memory_ReadD(0xed0040)+1); // ÀÑ»»²ÔÆ¯»þŽÖ(min.)
+   Memory_WriteD(0xed0044, Memory_ReadD(0xed0044)+1); // ÀÑ»»µ¯Æ°²ó¿ô
 
-	OPM_Cleanup();
+   OPM_Cleanup();
 #ifndef	NO_MERCURY
-	Mcry_Cleanup();
+   Mcry_Cleanup();
 #endif
 
-	Joystick_Cleanup();
-	SRAM_Cleanup();
-	FDD_Cleanup();
-	//CDROM_Cleanup();
-	MIDI_Cleanup();
-	DSound_Cleanup();
-	WinX68k_Cleanup();
-	WinDraw_Cleanup();
-	WinDraw_CleanupScreen();
+   Joystick_Cleanup();
+   SRAM_Cleanup();
+   FDD_Cleanup();
+   //CDROM_Cleanup();
+   MIDI_Cleanup();
+   DSound_Cleanup();
+   WinX68k_Cleanup();
+   WinDraw_Cleanup();
+   WinDraw_CleanupScreen();
 
-	SaveConfig();
-
-	return 0;
+   SaveConfig();
 }
 

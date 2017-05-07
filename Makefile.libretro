@@ -5,42 +5,81 @@ ifeq ($(platform),)
 platform = unix
 ifeq ($(shell uname -a),)
    platform = win
+else ifneq ($(findstring MINGW,$(shell uname -a)),)
+   platform = win
 else ifneq ($(findstring Darwin,$(shell uname -a)),)
    platform = osx
-else ifneq ($(findstring MINGW,$(shell uname -a)),)
+else ifneq ($(findstring win,$(shell uname -a)),)
    platform = win
 endif
 endif
 
-ifdef CYCLONE
-CFLAGS += -DCYCLONE
-CXXFLAGS += -DCYCLONE
+# system platform
+system_platform = unix
+ifeq ($(shell uname -a),)
+	EXE_EXT = .exe
+	system_platform = win
+else ifneq ($(findstring Darwin,$(shell uname -a)),)
+	system_platform = osx
+	arch = intel
+ifeq ($(shell uname -p),powerpc)
+	arch = ppc
+endif
+else ifneq ($(findstring MINGW,$(shell uname -a)),)
+	system_platform = win
+endif
+
+ifeq ($(platform), win)
+	INCLUDES += -I Windows
 endif
 
 TARGET_NAME := px68k
+ENDIANNESS_DEFINES :=
+CORE_DIR := .
 
 ifeq ($(platform), unix)
-	CC = gcc
-	CXX = g++
 	CFLAGS = -g -O2 
 	CXXFLAGS = -g -O2  -fno-merge-constants 
 	TARGET := $(TARGET_NAME)_libretro.so
 	fpic := -fPIC
 	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
-	ENDIANNESS_DEFINES := -DLSB_FIRST
 	FLAGS += -D__LINUX__
-# android arm
+else ifneq (,$(findstring osx,$(platform)))
+	TARGET := $(TARGET_NAME)_libretro.dylib
+	fpic = -fPIC
+   SHARED := -dynamiclib
+
+else ifneq (,$(findstring ios,$(platform)))
+	TARGET := $(TARGET_NAME)_libretro_ios.dylib
+	fpic = -fPIC
+	SHARED := -dynamiclib
+
+ifeq ($(IOSSDK),)
+   IOSSDK := $(shell xcodebuild -version -sdk iphoneos Path)
+endif
+
+	DEFINES := -DIOS
+	CC = cc -arch armv7 -isysroot $(IOSSDK)
+	CXX = c++ -arch armv7 -isysroot $(IOSSDK)
+ifeq ($(platform),ios9)
+CC     += -miphoneos-version-min=8.0
+CXXFLAGS += -miphoneos-version-min=8.0
+else
+CC     += -miphoneos-version-min=5.0
+CXXFLAGS += -miphoneos-version-min=5.0
+endif
+
+	# android arm
 else ifneq (,$(findstring android,$(platform)))
-   	TARGET := $(TARGET_NAME)_libretro_android.so
-   	fpic = -fPIC
-   	SHARED := -lstdc++ -llog -shared -Wl,--version-script=link.T -Wl,--no-undefined
+	TARGET := $(TARGET_NAME)_libretro_android.so
+	fpic = -fPIC
+	SHARED := -lstdc++ -llog -shared -Wl,--version-script=link.T -Wl,--no-undefined
 	CFLAGS +=  -g -O2
- 	CXXFLAGS = -g -O2  -fno-merge-constants 
-   	CC = arm-linux-androideabi-gcc
-   	CXX = arm-linux-androideabi-g++
-	ENDIANNESS_DEFINES := -DLSB_FIRST
+	CXXFLAGS = -g -O2  -fno-merge-constants 
+	CC = arm-linux-androideabi-gcc
+	CXX = arm-linux-androideabi-g++
 	FLAGS += -D__LINUX__ -DARM -marm
-# crosspi arm
+	# crosspi arm
 else ifneq (,$(findstring crosspi,$(platform)))
 	CC = arm-linux-gnueabihf-gcc
 	CXX = arm-linux-gnueabihf-g++
@@ -51,9 +90,8 @@ CPU_FLAGS += -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard
 	TARGET := $(TARGET_NAME)_libretro.so
 	fpic := -fPIC
 	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
-	ENDIANNESS_DEFINES := -DLSB_FIRST
 	FLAGS += -D__LINUX__ -DARM -marm
-# cross Windows
+	# cross Windows
 else ifeq ($(platform), wincross64)
 	TARGET := $(TARGET_NAME)_libretro.dll
 	AR = x86_64-w64-mingw32-ar
@@ -61,43 +99,23 @@ else ifeq ($(platform), wincross64)
 	CXX = x86_64-w64-mingw32-g++ 
 	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
 	LDFLAGS += -static-libgcc -static-libstdc++ 
-	ENDIANNESS_DEFINES := -DLSB_FIRST
-	FLAGS +=
 	EXTRA_LDF := -lwinmm -Wl,--export-all-symbols
 else
-   	TARGET :=  $(TARGET_NAME)_retro.dll
-   	CC = gcc
-   	CXX = g++
-   	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
-   	LDFLAGS += -static-libgcc -static-libstdc++ 
-   	ENDIANNESS_DEFINES := -DLSB_FIRST
-   	FLAGS +=
+	TARGET :=  $(TARGET_NAME)_libretro.dll
+	CC = gcc
+	CXX = g++
+	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
+	LDFLAGS += -static-libgcc -static-libstdc++ 
 	EXTRA_LDF = -lwinmm -Wl,--export-all-symbols
 endif
 
 CDEBUGFLAGS+= -DNO_MERCURY
 CDEBUGFLAGS+=-DPX68K_VERSION=0.15
-EXTRA_INCLUDES= -I./libretro -I./x68k -I./fmgen -I./win32api
 FLAGS += $(CDEBUGFLAGS)
 
-C68KOBJS= m68000/c68k/c68k.o m68000/c68k/c68kexec.o
-CYCLONEOBJS = m68000/cyclone.o
+include $(CORE_DIR)/Makefile.common
 
-ifdef CYCLONE
-CPUOBJS= x68k/d68k.o m68000/m68000.o $(CYCLONEOBJS)
-else
-CPUOBJS= x68k/d68k.o m68000/m68000.o $(C68KOBJS)
-endif
-
-X68KOBJS= x68k/adpcm.o x68k/bg.o x68k/crtc.o x68k/dmac.o x68k/fdc.o x68k/fdd.o x68k/disk_d88.o x68k/disk_dim.o x68k/disk_xdf.o x68k/gvram.o x68k/ioc.o x68k/irqh.o x68k/mem_wrap.o x68k/mercury.o x68k/mfp.o x68k/palette.o x68k/midi.o x68k/pia.o x68k/rtc.o x68k/sasi.o x68k/scc.o x68k/scsi.o x68k/sram.o x68k/sysport.o x68k/tvram.o
-FMGENOBJS= fmgen/fmgen.o fmgen/fmg_wrap.o fmgen/file.o fmgen/fmtimer.o fmgen/opm.o fmgen/opna.o fmgen/psg.o
-RETROCOBJS= libretro/joystick.o libretro/juliet.o libretro/keyboard.o libretro/mouse.o libretro/prop.o libretro/status.o libretro/timer.o libretro/dswin.o libretro/windraw.o libretro/winui.o libretro/about.o libretro/common.o
-RETROCXXOBJS= libretro/winx68k.o
-WIN32APIOBJS= win32api/dosio.o win32api/fake.o win32api/peace.o
-
-OBJECTS := $(X68KOBJS) $(RETROCOBJS) $(WIN32APIOBJS) $(CPUOBJS)  $(FMGENOBJS) $(RETROCXXOBJS) libretro.o 
-
-#$(C68KOBJS)
+OBJECTS := $(SOURCES_CXX:.cpp=.o) $(SOURCES_C:.c=.o) $(SOURCES_S:.s=.o)
 
 all: $(TARGET)
 
@@ -108,7 +126,8 @@ else
 endif
 
 LDFLAGS +=  $(fpic) $(SHARED) $(EXTRA_LDF) 
-FLAGS += -I. -I..  $(EXTRA_INCLUDES) 
+FLAGS   += $(INCFLAGS) 
+#FLAGS += -DC68K_NO_JUMP_TABLE 
 
 WARNINGS :=  
 	
@@ -116,6 +135,11 @@ FLAGS += -D__LIBRETRO__ $(ENDIANNESS_DEFINES) $(WARNINGS) $(fpic)
 
 CXXFLAGS += $(FLAGS) -fpermissive $(CPU_FLAGS)
 CFLAGS += $(FLAGS) -std=gnu99 $(CPU_FLAGS)
+
+ifdef CYCLONE
+CFLAGS += -DCYCLONE
+CXXFLAGS += -DCYCLONE
+endif
 
 $(TARGET): $(OBJECTS)
 	$(CXX) -o $@ $^ $(LDFLAGS)

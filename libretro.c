@@ -1,18 +1,16 @@
 
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>  
+#include <ctype.h>
+#include <string.h>
 
 #include "libretro.h"
 
 #ifdef _WIN32
-   char slash = '\\';
+char slash = '\\';
 #else
-   char slash = '/';
+char slash = '/';
 #endif
-
-#define LOGI printf
-#define RENDER16B 1
 
 #define SOUNDRATE 44100.0
 #define SNDSZ 795
@@ -54,24 +52,22 @@ void retro_set_audio_sample_batch(retro_audio_sample_batch_t cb) { audio_batch_c
 void retro_set_input_poll(retro_input_poll_t cb) { input_poll_cb = cb; }
 void retro_set_input_state(retro_input_state_t cb) { input_state_cb = cb; }
 
-#define LOGI printf
-
 static char CMDFILE[512];
 
 int loadcmdfile(char *argv)
 {
-    int res=0;
+   int res=0;
 
-    FILE *fp = fopen(argv,"r");
+   FILE *fp = fopen(argv,"r");
 
-    if( fp != NULL )
-    {
-	if ( fgets (CMDFILE , 512 , fp) != NULL )
-		res=1;	
-	fclose (fp);
-    }
+   if( fp != NULL )
+   {
+      if ( fgets (CMDFILE , 512 , fp) != NULL )
+         res=1;	
+      fclose (fp);
+   }
 
-    return res;
+   return res;
 }
 
 int HandleExtension(char *path,char *ext)
@@ -123,16 +119,13 @@ int pre_main(const char *argv)
    if (strlen(argv) > strlen("cmd"))
    {
       if( HandleExtension((char*)argv,"cmd") || HandleExtension((char*)argv,"CMD"))
-          i=loadcmdfile((char*)argv);     
+         i=loadcmdfile((char*)argv);     
    }
 
    if(i==1)
-   {
       parse_cmdline(CMDFILE);      
-      LOGI("Starting game from command line :%s\n",CMDFILE);  
-   }
    else
-   parse_cmdline(argv); 
+      parse_cmdline(argv); 
 
    Only1Arg = (strcmp(ARGUV[0],"px68k") == 0) ? 0 : 1;
 
@@ -147,16 +140,17 @@ int pre_main(const char *argv)
       Add_Option("px68k");
 
       if (strlen(RPATH) >= strlen("hdf")){
-	if(!strcasecmp(&RPATH[strlen(RPATH)-strlen("hdf")], "hdf")){
-			Add_Option("-h");
-			cfgload=1;
-	}
+         if(!strcasecmp(&RPATH[strlen(RPATH)-strlen("hdf")], "hdf")){
+            Add_Option("-h");
+            cfgload=1;
+         }
       }
 
-      if(cfgload==0) {
-		//Add_Option("-verbose");
-		//Add_Option(retro_system_tos);
-		//Add_Option("-8");
+      if(cfgload==0)
+      {
+         //Add_Option("-verbose");
+         //Add_Option(retro_system_tos);
+         //Add_Option("-8");
       }
 
       Add_Option(RPATH);
@@ -170,7 +164,6 @@ int pre_main(const char *argv)
    for (i = 0; i < PARAMCOUNT; i++)
    {
       xargv_cmd[i] = (char*)(XARGV[i]);
-      LOGI("%2d  %s\n",i,XARGV[i]);
    }
 
    pmain(PARAMCOUNT,( char **)xargv_cmd); 
@@ -182,15 +175,15 @@ int pre_main(const char *argv)
 
 void parse_cmdline(const char *argv)
 {
-	char *p,*p2,*start_of_word;
-	int c,c2;
-	static char buffer[512*4];
-	enum states { DULL, IN_WORD, IN_STRING } state = DULL;
-	
-	strcpy(buffer,argv);
-	strcat(buffer," \0");
+   char *p,*p2,*start_of_word;
+   int c,c2;
+   static char buffer[512*4];
+   enum states { DULL, IN_WORD, IN_STRING } state = DULL;
 
-	for (p = buffer; *p != '\0'; p++)
+   strcpy(buffer,argv);
+   strcat(buffer," \0");
+
+   for (p = buffer; *p != '\0'; p++)
    {
       c = (unsigned char) *p; /* convert to unsigned char for is* functions */
       switch (state)
@@ -238,17 +231,14 @@ void parse_cmdline(const char *argv)
    }
 }
 
-void texture_init(){
-        memset(videoBuffer, 0, sizeof(videoBuffer));
+void texture_init(void)
+{
+   memset(videoBuffer, 0, sizeof(*videoBuffer));
 } 
 
 void retro_set_environment(retro_environment_t cb)
 {
-//   bool no_rom = true;
-
    environ_cb = cb;
-
- //  cb(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &no_rom);
 
    struct retro_variable variables[] = {
       {
@@ -265,24 +255,23 @@ static void update_variables(void)
 {
    struct retro_variable var = {0};
 
- 
+
    var.key = "px68k_analog";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
       fprintf(stderr, "value: %s\n", var.value);
-      if (strcmp(var.value, "OFF") == 0)
+      if (!strcmp(var.value, "OFF"))
          opt_analog = false;
-      if (strcmp(var.value, "ON") == 0)
+      if (!strcmp(var.value, "ON"))
          opt_analog = true;
 
-        fprintf(stderr, "[libretro-test]: Analog: %s.\n",opt_analog?"ON":"OFF");
+      fprintf(stderr, "[libretro-test]: Analog: %s.\n",opt_analog?"ON":"OFF");
    }
-
 }
 
-void update_input()
+void update_input(void)
 {
   input_poll_cb();
 }
@@ -302,17 +291,17 @@ static void keyboard_cb(bool down, unsigned keycode, uint32_t character, uint16_
 
 void retro_get_system_info(struct retro_system_info *info)
 {
-    memset(info, 0, sizeof(*info));
-	info->library_name = "px68k";
-	info->library_version = "0.15+";
-	info->need_fullpath = true;
-	info->valid_extensions = "dim|zip|img|d88|88d|hdm|dup|2hd|xdf|hdf";
+   memset(info, 0, sizeof(*info));
+   info->library_name = "px68k";
+   info->library_version = "0.15+";
+   info->need_fullpath = true;
+   info->valid_extensions = "dim|zip|img|d88|88d|hdm|dup|2hd|xdf|hdf|cmd";
 }
 
 
 void retro_get_system_av_info(struct retro_system_av_info *info)
 {
-//FIXME handle vice PAL/NTSC
+   /* FIXME handle PAL/NTSC */
    struct retro_game_geometry geom = { retrow, retroh,800, 600 ,4.0 / 3.0 };
    struct retro_system_timing timing = { 55.45, SOUNDRATE };
 
@@ -320,7 +309,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
    info->timing   = timing;
 }
 
-void update_geometry()
+void update_geometry(void)
 {
    struct retro_system_av_info system_av_info;
    system_av_info.geometry.base_width = retrow;
@@ -362,17 +351,16 @@ void retro_cheat_set(unsigned index, bool enabled, const char *code)
 }
 
 bool retro_load_game(const struct retro_game_info *info)
-{   
+{
+   const char *full_path;
 
-	const char *full_path;
+   full_path = info->path;
 
-    	full_path = info->path;
+   strcpy(RPATH,full_path);
 
-	strcpy(RPATH,full_path);
+   printf("LOAD EMU\n");
 
-	printf("LOAD EMU\n");
-
-    	return true;
+   return true;
 }
 
 bool retro_load_game_special(unsigned game_type, const struct retro_game_info *info, size_t num_info)
@@ -444,11 +432,8 @@ void retro_init(void)
 
    sprintf(retro_system_conf, "%s%ckeropi\0",RETRO_DIR,slash);
 
-   LOGI("Retro SYSTEM_DIRECTORY %s\n",retro_system_directory);
-   LOGI("Retro SAVE_DIRECTORY %s\n",retro_save_directory);
-   LOGI("Retro CONTENT_DIRECTORY %s\n",retro_content_directory);
-  
    enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
+
    if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
    {
       fprintf(stderr, "RGB565 is not supported.\n");
@@ -487,8 +472,8 @@ void retro_init(void)
 
 void retro_deinit(void)
 {
-	end_loop_retro();
-        printf("Retro DeInit\n");
+   end_loop_retro();
+   printf("Retro DeInit\n");
 }
 
 void retro_reset(void)
@@ -499,32 +484,31 @@ static int firstcall=1;
 
 void retro_run(void)
 {       
+   if(firstcall)
+   {
+      pre_main(RPATH);
+      firstcall=0;
+      printf("INIT done\n");
+      return;
+   }
 
-	if(firstcall){
-   		pre_main(RPATH);
-		firstcall=0;
-		printf("INIT done\n");
-		return;
-	}
+   if (CHANGEAV == 1)
+   {
+      update_geometry();
+      printf("w:%d h:%d a:%f\n",retrow,retroh,(float)(4/3));
+      CHANGEAV=0;
+   }
 
-   	if (CHANGEAV == 1){
-      		update_geometry();
-		printf("w:%d h:%d a:%f\n",retrow,retroh,(float)(4/3));
-      		CHANGEAV=0;
-   	}
+   update_input();
 
+   if(pauseg!=-1)
+   {
+   }
 
-	update_input();
+   exec_app_retro();
 
-	if(pauseg!=-1){
+   raudio_callback(NULL, NULL,SNDSZ*4);
 
-	}
-
-	exec_app_retro();
-	
-	raudio_callback(NULL, NULL,SNDSZ*4);
-
-        video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
-
+   video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
 }
 
