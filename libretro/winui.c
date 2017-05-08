@@ -243,6 +243,7 @@ WinUI_Init(void)
 #else
 
 #ifdef __LIBRETRO__
+
 #ifdef _WIN32
 #define CUR_DIR_STR "c:\\"
 #else
@@ -251,10 +252,9 @@ WinUI_Init(void)
 #else
 #define CUR_DIR_STR "./"
 #endif
-
 #endif
-
-	strcpy(cur_dir_str, CUR_DIR_STR);
+if(filepath[0] != 0)strcpy(cur_dir_str, filepath);
+else	strcpy(cur_dir_str, CUR_DIR_STR);
 #ifdef ANDROID
 	strcat(cur_dir_str, "/");
 #endif

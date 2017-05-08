@@ -487,10 +487,11 @@ void WinDraw_DrawLine(void)
 {
 	int opaq, ton=0, gon=0, bgon=0, tron=0, pron=0, tdrawed=0;
 
-if(VLINE==-1){printf("%d %d\n",VLINE,VLINE);
-return;
-
-}	if (!TextDirtyLine[VLINE]) return;
+if(VLINE==-1){
+	printf("%d %d\n",VLINE,VLINE);
+	return;
+}
+	if (!TextDirtyLine[VLINE]) return;
 	TextDirtyLine[VLINE] = 0;
 	Draw_DrawFlag = 1;
 
