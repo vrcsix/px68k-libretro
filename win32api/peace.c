@@ -71,7 +71,7 @@ enum {
 };
 #ifdef _WIN32
 typedef unsigned int u_int;
-#define bzero(s,d) memset(s,1,d)
+#define bzero(s,d) memset(s,0,d)
 #endif
 struct internal_handle {
 	void	*p;

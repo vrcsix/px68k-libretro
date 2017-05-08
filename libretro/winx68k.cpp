@@ -353,7 +353,12 @@ void WinX68k_Exec(void)
 	} else if (Config.XVIMode == 2) {
 		clk_total = (clk_total*24)/10;
 		clkdiv = 24;
-	} else {
+
+	}else if (Config.XVIMode == 3) {
+		clk_total = (clk_total*24)/10;
+		clkdiv = 24;
+
+	}else {
 		clkdiv = 10;
 	}
 	ICount += clk_total;
@@ -717,7 +722,7 @@ extern "C" void handle_retrok(){
 
 #ifdef WIN68DEBUG
 	if(Core_Key_Sate[RETROK_F11] && Core_Key_Sate[RETROK_F11]!=Core_old_Key_Sate[RETROK_F11]  )
-		if (i == RETROK_F10) {
+		if (i == RETROK_F11) {
 			traceflag ^= 1;
 			printf("trace %s\n", (traceflag)?"on":"off");
 		}

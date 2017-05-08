@@ -480,11 +480,14 @@ INLINE void WinDraw_DrawPriLine(void)
 	WD_LOOP(0, TextDotX, _DPL_SUB);
 }
 
+#ifdef _WIN32
+#define bzero(s,d) memset(s,0,d)
+#endif
 void WinDraw_DrawLine(void)
 {
 	int opaq, ton=0, gon=0, bgon=0, tron=0, pron=0, tdrawed=0;
 
-if(VLINE==-1){printf("%d %d\n",VLINE,VLINE);
+if(VLINE<0){printf("%d %d\n",VLINE,VLINE);
 return;
 
 }	if (!TextDirtyLine[VLINE]) return;
@@ -572,6 +575,8 @@ return;
 			{
 				if ( ((VCReg2[0]&0x1e)==0x1e)&&(tron) )
 					Grp_DrawLine8TR(1, 1);
+				else if ( ((VCReg2[0]&0x1d)==0x1d)&&(tron) )
+					Grp_DrawLine8TR_GT(1, 1);
 				else
 					Grp_DrawLine8(1, 1);
 				opaq = 0;
@@ -597,6 +602,8 @@ return;
 			{
 				if ( ((VCReg2[0]&0x1e)==0x1e)&&(tron) )
 					Grp_DrawLine8TR(0, 1);
+				else if ( ((VCReg2[0]&0x1d)==0x1d)&&(tron) )
+					Grp_DrawLine8TR_GT(0, 1);
 				else
 					Grp_DrawLine8(0, 1);
 				opaq = 0;
