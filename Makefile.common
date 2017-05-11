@@ -12,8 +12,13 @@ SOURCES_S := \
 				 $(CORE_DIR)/m68000/cyclone.s 
 else
 SOURCES_C += \
-				 $(CORE_DIR)/m68000/c68k/c68k.c \
+				 $(CORE_DIR)/m68000/c68k/c68k.c 
+ifeq ($(WINDOWS_BUILDFIX), 1)
+C68KEXEC_SOURCE :=		 $(CORE_DIR)/m68000/c68k/c68kexec.c 
+else
+SOURCES_C += \
 				 $(CORE_DIR)/m68000/c68k/c68kexec.c 
+endif
 endif
 
 SOURCES_C += \
