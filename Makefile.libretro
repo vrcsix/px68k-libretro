@@ -101,7 +101,6 @@ else ifeq ($(platform), wincross64)
 	LDFLAGS += -static-libgcc -static-libstdc++ 
 	EXTRA_LDF := -lwinmm -Wl,--export-all-symbols
 else
-	WINDOWS_BUILDFIX := 1 
 	TARGET :=  $(TARGET_NAME)_libretro.dll
 	CC = gcc
 	CXX = g++
@@ -116,15 +115,7 @@ FLAGS += $(CDEBUGFLAGS)
 
 include $(CORE_DIR)/Makefile.common
 
-ifeq ($(WINDOWS_BUILDFIX), 1)
-C68KEXEC_OBJECT := $(C68KEXEC_SOURCE:.c=.o)
-endif
-
 OBJECTS := $(SOURCES_CXX:.cpp=.o) $(SOURCES_C:.c=.o) $(SOURCES_S:.s=.o)
-
-ifeq ($(WINDOWS_BUILDFIX), 1)
-OBJECTS += $(C68KEXEC_OBJECT)
-endif
 
 all: $(TARGET)
 
@@ -136,7 +127,7 @@ endif
 
 LDFLAGS +=  $(fpic) $(SHARED) $(EXTRA_LDF) 
 FLAGS   += $(INCFLAGS) 
-#FLAGS += -DC68K_NO_JUMP_TABLE 
+FLAGS += -DC68K_NO_JUMP_TABLE 
 
 WARNINGS :=  
 	
@@ -161,9 +152,6 @@ $(TARGET): $(OBJECTS)
 
 %.o: %.s
 	$(CXX) $(CFLAGS)  -c $^ -o $@
-
-$(C68KEXEC_OBJECT): $(C68KEXEC_SOURCE)
-	$(CC) -c -o $@ $< $(CFLAGS) -O0
 
 clean:
 	rm -f $(TARGET) $(OBJECTS)
