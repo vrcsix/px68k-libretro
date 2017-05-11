@@ -127,7 +127,7 @@ endif
 
 LDFLAGS +=  $(fpic) $(SHARED) $(EXTRA_LDF) 
 FLAGS   += $(INCFLAGS) 
-#FLAGS += -DC68K_NO_JUMP_TABLE 
+FLAGS += -DC68K_NO_JUMP_TABLE 
 
 WARNINGS :=  
 	
@@ -152,7 +152,6 @@ $(TARGET): $(OBJECTS)
 
 %.o: %.s
 	$(CXX) $(CFLAGS)  -c $^ -o $@
-
 
 clean:
 	rm -f $(TARGET) $(OBJECTS)
