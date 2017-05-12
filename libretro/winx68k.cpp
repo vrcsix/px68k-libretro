@@ -735,7 +735,6 @@ extern "C" void handle_retrok(){
 	KEYP(RETROK_0,0xb);
 	KEYP(RETROK_MINUS,0xc);
 	KEYP(RETROK_QUOTE,0xd);
-	KEYP(RETROK_EQUALS,0xe); //Yen symbol ¥ (equals is on shift+minus)
 	KEYP(RETROK_BACKSPACE,0xf);
 
 	KEYP(RETROK_TAB,0x10);
@@ -753,6 +752,7 @@ extern "C" void handle_retrok(){
 	KEYP(RETROK_LEFTBRACKET,0x1C);
 	KEYP(RETROK_BACKSLASH,0x28); // colon :
 	KEYP(RETROK_RETURN,0x1d);
+	KEYP(RETROK_EQUALS,0xe); //Yen symbol ¥ (equals is on shift+minus)
 
 	KEYP(RETROK_a,0x1e);
 	KEYP(RETROK_s,0x1f);
@@ -812,6 +812,7 @@ extern "C" void handle_retrok(){
 
 	KEYP(RETROK_PRINT,0x52); //symbol input (kigou)
 	KEYP(RETROK_SCROLLOCK,0x53); //registration (touroku)
+	KEYP(RETROK_F11,0x54); //help
 //	KEYP(RETROK_MENU,0x55); //xf1
 //	KEYP(RETROK_KP_PERIOD,0x56); //xf2
 //	KEYP(RETROK_KP_PERIOD,0x57); //xf3
@@ -830,7 +831,6 @@ extern "C" void handle_retrok(){
 
 	for(i=0;i<10;i++)
 		KEYP(RETROK_F1+i,0x63+i);
-	KEYP(RETROK_F11,0x54); //help
 
 //	KEYP(RETROK_KP_PERIOD,0x6d);
 //	KEYP(RETROK_KP_PERIOD,0x6e);
