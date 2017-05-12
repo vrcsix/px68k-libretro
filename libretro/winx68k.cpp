@@ -750,7 +750,6 @@ extern "C" void handle_retrok(){
 	KEYP(RETROK_p,0x1A);
 	KEYP(RETROK_BACKQUOTE,0x1B);
 	KEYP(RETROK_LEFTBRACKET,0x1C);
-	KEYP(RETROK_BACKSLASH,0x28); // colon :
 	KEYP(RETROK_RETURN,0x1d);
 	KEYP(RETROK_EQUALS,0xe); //Yen symbol ¥ (equals is on shift+minus)
 
@@ -765,6 +764,7 @@ extern "C" void handle_retrok(){
 	KEYP(RETROK_l,0x26);
 	KEYP(RETROK_PLUS,0x27);
 	KEYP(RETROK_SEMICOLON,0x27);
+	KEYP(RETROK_BACKSLASH,0x28); // colon :
 	KEYP(RETROK_RIGHTBRACKET,0x29);
 
 	KEYP(RETROK_z,0x2a);
