@@ -735,7 +735,6 @@ extern "C" void handle_retrok(){
 	KEYP(RETROK_0,0xb);
 	KEYP(RETROK_MINUS,0xc);
 	KEYP(RETROK_QUOTE,0xd);
-	KEYP(RETROK_BACKSLASH,0xe);
 	KEYP(RETROK_BACKSPACE,0xf);
 
 	KEYP(RETROK_TAB,0x10);
@@ -752,6 +751,7 @@ extern "C" void handle_retrok(){
 	KEYP(RETROK_BACKQUOTE,0x1B);
 	KEYP(RETROK_LEFTBRACKET,0x1C);
 	KEYP(RETROK_RETURN,0x1d);
+	KEYP(RETROK_EQUALS,0xe); //Yen symbol ¥ (equals is on shift+minus)
 
 	KEYP(RETROK_a,0x1e);
 	KEYP(RETROK_s,0x1f);
@@ -763,7 +763,8 @@ extern "C" void handle_retrok(){
 	KEYP(RETROK_k,0x25);
 	KEYP(RETROK_l,0x26);
 	KEYP(RETROK_PLUS,0x27);
-	KEYP(RETROK_SEMICOLON,0x28);
+	KEYP(RETROK_SEMICOLON,0x27);
+	KEYP(RETROK_BACKSLASH,0x28); // colon :
 	KEYP(RETROK_RIGHTBRACKET,0x29);
 
 	KEYP(RETROK_z,0x2a);
@@ -809,22 +810,23 @@ extern "C" void handle_retrok(){
 	//KEYP(RETROK_COMMA,0x50);
 	KEYP(RETROK_KP_PERIOD,0x51);
 
-	KEYP(RETROK_PRINT,0x52);
-	KEYP(RETROK_SCROLLOCK,0x53);
-	KEYP(RETROK_PAUSE,0x54);
+	KEYP(RETROK_PRINT,0x52); //symbol input (kigou)
+	KEYP(RETROK_SCROLLOCK,0x53); //registration (touroku)
+	KEYP(RETROK_F11,0x54); //help
 //	KEYP(RETROK_MENU,0x55); //xf1
 //	KEYP(RETROK_KP_PERIOD,0x56); //xf2
 //	KEYP(RETROK_KP_PERIOD,0x57); //xf3
 //	KEYP(RETROK_KP_PERIOD,0x58); //xf4 
 //	KEYP(RETROK_KP_PERIOD,0x59); //xf5
-//	KEYP(RETROK_KP_PERIOD,0x5a);
-//	KEYP(RETROK_KP_PERIOD,0x5b);
-//	KEYP(RETROK_KP_PERIOD,0x5c);
+//	KEYP(RETROK_KP_PERIOD,0x5a); //kana
+//	KEYP(RETROK_KP_PERIOD,0x5b); //romaji
+//	KEYP(RETROK_KP_PERIOD,0x5c); //input by codes
 	KEYP(RETROK_CAPSLOCK,0x5d);
 	KEYP(RETROK_INSERT,0x5e);
 //	KEYP(RETROK_KP_PERIOD,0x5f);
 //	KEYP(RETROK_KP_PERIOD,0x60);
 	KEYP(RETROK_BREAK,0x61); //break
+	KEYP(RETROK_PAUSE,0x61); //break (allow shift+break combo)
 //	KEYP(RETROK_KP_PERIOD,0x62); //copy
 
 	for(i=0;i<10;i++)
@@ -899,7 +901,10 @@ extern "C" void exec_app_retro(){
    		for(i=0;i<320;i++)
       			Core_Key_Sate[i]=input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0,i) ? 0x80: 0;
 
-   		if(memcmp( Core_Key_Sate,Core_old_Key_Sate , sizeof(Core_Key_Sate) ) )
+   		if (input_state_cb(0, RETRO_DEVICE_JOYPAD,0, RETRO_DEVICE_ID_JOYPAD_L2))	//Joypad Key for Menu
+				Core_Key_Sate[RETROK_F12] = 0x80;
+			
+		if(memcmp( Core_Key_Sate,Core_old_Key_Sate , sizeof(Core_Key_Sate) ) )
 			handle_retrok();
 
    		memcpy(Core_old_Key_Sate,Core_Key_Sate , sizeof(Core_Key_Sate) );
