@@ -30,6 +30,7 @@ bool opt_analog;
 int retrow=800;
 int retroh=600;
 int CHANGEAV=0;
+int JOY_TYPE;
 
 int pauseg=0;
 
@@ -241,9 +242,8 @@ void retro_set_environment(retro_environment_t cb)
    environ_cb = cb;
 
    struct retro_variable variables[] = {
-      {
-         "px68k_analog","Use Analog; OFF|ON",
-      },
+      { "px68k_analog" , "Use Analog; OFF|ON" },
+      { "px68k_joypad" , "Joypad Type; Default (2 Buttons)|CPSF-MD (6 Buttons)|CPSF-SFC (8 Buttons)" },
       { NULL, NULL },
    };
 
@@ -268,6 +268,19 @@ static void update_variables(void)
          opt_analog = true;
 
       fprintf(stderr, "[libretro-test]: Analog: %s.\n",opt_analog?"ON":"OFF");
+   }
+   
+   var.key = "px68k_joypad";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "Default (2 Buttons)") == 0)
+         JOY_TYPE = 0;
+      else if (strcmp(var.value, "CPSF-MD (6 Buttons)") == 0)
+         JOY_TYPE = 1;
+      else if (strcmp(var.value, "CPSF-SFC (8 Buttons)") == 0)
+         JOY_TYPE = 2;
    }
 }
 
@@ -321,8 +334,8 @@ void update_geometry(void)
 
 void retro_set_controller_port_device(unsigned port, unsigned device)
 {
-    (void)port;
-    (void)device;
+	(void)port;
+	(void)device;
 }
 
 size_t retro_serialize_size(void)
@@ -498,6 +511,13 @@ void retro_run(void)
       update_geometry();
       printf("w:%d h:%d a:%f\n",retrow,retroh,(float)(4/3));
       CHANGEAV=0;
+   }
+   
+   bool updated = false;
+   
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
+   {
+      update_variables();
    }
 
    update_input();
