@@ -512,6 +512,13 @@ void retro_run(void)
       printf("w:%d h:%d a:%f\n",retrow,retroh,(float)(4/3));
       CHANGEAV=0;
    }
+   
+   bool updated = false;
+   
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
+   {
+      update_variables();
+   }
 
    update_input();
 
