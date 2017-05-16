@@ -12,6 +12,7 @@ char slash = '\\';
 char slash = '/';
 #endif
 
+#define RETRO_DEVICE_CPSF_MD	RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_JOYPAD, 0)
 #define SOUNDRATE 44100.0
 #define SNDSZ 795
 
@@ -30,6 +31,7 @@ bool opt_analog;
 int retrow=800;
 int retroh=600;
 int CHANGEAV=0;
+int INPUT_DEVICE;
 
 int pauseg=0;
 
@@ -247,7 +249,18 @@ void retro_set_environment(retro_environment_t cb)
       { NULL, NULL },
    };
 
+   static const struct retro_controller_description port_1[] = {
+      { "ATARI (Standard)", RETRO_DEVICE_JOYPAD },
+      { "CPSF-MD (6-buttons)", RETRO_DEVICE_CPSF_MD },
+   };
+
+   static const struct retro_controller_info ports[] = {
+      { port_1, 2 },
+      { 0, 0, 0 }
+   };
+
    cb(RETRO_ENVIRONMENT_SET_VARIABLES, variables);
+   environ_cb(RETRO_ENVIRONMENT_SET_CONTROLLER_INFO, (void*)ports);
 
 }
 
@@ -321,8 +334,14 @@ void update_geometry(void)
 
 void retro_set_controller_port_device(unsigned port, unsigned device)
 {
-    (void)port;
-    (void)device;
+    switch (device) {
+		case RETRO_DEVICE_JOYPAD:
+			INPUT_DEVICE = 0;
+			break;
+		case RETRO_DEVICE_CPSF_MD:
+			INPUT_DEVICE = 1;
+			break;
+	}
 }
 
 size_t retro_serialize_size(void)
