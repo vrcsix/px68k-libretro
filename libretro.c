@@ -5,8 +5,8 @@
 #include <string.h>
 
 #include "libretro.h"
-#include "libretro\winx68k.h"
-#include "libretro\dswin.h"
+#include "libretro/winx68k.h"
+#include "libretro/dswin.h"
 
 #ifdef _WIN32
 char slash = '\\';
