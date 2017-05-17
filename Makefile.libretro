@@ -1,5 +1,6 @@
 
 DEBUG = 0
+GIT_VERSION := " $(shell git rev-parse --short HEAD)"
 
 ifeq ($(platform),)
 platform = unix
@@ -110,7 +111,7 @@ else
 endif
 
 CDEBUGFLAGS+= -DNO_MERCURY
-CDEBUGFLAGS+=-DPX68K_VERSION=0.15
+CDEBUGFLAGS+= -DPX68K_VERSION=\"0.15+\" -DGIT_VERSION=\"$(GIT_VERSION)\"
 FLAGS += $(CDEBUGFLAGS)
 
 include $(CORE_DIR)/Makefile.common

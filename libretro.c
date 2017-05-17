@@ -5,6 +5,8 @@
 #include <string.h>
 
 #include "libretro.h"
+#include "libretro\winx68k.h"
+#include "libretro\dswin.h"
 
 #ifdef _WIN32
 char slash = '\\';
@@ -304,9 +306,15 @@ static void keyboard_cb(bool down, unsigned keycode, uint32_t character, uint16_
 
 void retro_get_system_info(struct retro_system_info *info)
 {
+#ifndef GIT_VERSION
+#define GIT_VERSION ""
+#endif
+#ifndef PX68K_VERSION
+#define PX68K_VERSION "0.15+"
+#endif
    memset(info, 0, sizeof(*info));
-   info->library_name = "px68k";
-   info->library_version = "0.15+";
+   info->library_name = "PX68K";
+   info->library_version = PX68K_VERSION GIT_VERSION;
    info->need_fullpath = true;
    info->valid_extensions = "dim|zip|img|d88|88d|hdm|dup|2hd|xdf|hdf|cmd";
 }

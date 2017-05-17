@@ -43,6 +43,10 @@ extern int realdisp_w, realdisp_h;
 #endif
 
 int WinX68k_Reset(void);
+int pmain(int argc, char *argv[]);
+void end_loop_retro(void);
+void exec_app_retro();
+
 
 #ifndef	winx68k_gtkwarpper_h
 #define	winx68k_gtkwarpper_h
