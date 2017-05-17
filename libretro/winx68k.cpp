@@ -518,7 +518,8 @@ void WinX68k_Exec(void)
 		}
 	}
 
-	Joystick_Update(FALSE, -1);
+	Joystick_Update(FALSE, -1, 0);
+	Joystick_Update(FALSE, -1, 1);
 
 	FDD_SetFDInt();
 	if ( !DispFrame )
@@ -912,7 +913,7 @@ extern "C" void exec_app_retro(){
 		if (menu_mode != menu_out) {
 			int ret; 
 
-			Joystick_Update(TRUE, menu_key_down);
+			Joystick_Update(TRUE, menu_key_down, 0);
 
 			ret = WinUI_Menu(menu_mode == menu_enter);
 			menu_mode = menu_in;
