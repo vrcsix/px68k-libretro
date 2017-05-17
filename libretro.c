@@ -245,7 +245,7 @@ void retro_set_environment(retro_environment_t cb)
 
    struct retro_variable variables[] = {
       { "px68k_analog" , "Use Analog; OFF|ON" },
-      { "px68k_joypad" , "Joypad Type; Default (2 Buttons)|CPSF-MD (6 Buttons)|CPSF-SFC (8 Buttons)" },
+      { "px68k_joypad" , "Joypad Type; Default (2 Buttons)|CPSF-MD (8 Buttons)|CPSF-SFC (8 Buttons)" },
       { NULL, NULL },
    };
 
@@ -279,7 +279,7 @@ static void update_variables(void)
    {
       if (strcmp(var.value, "Default (2 Buttons)") == 0)
          JOY_TYPE = 0;
-      else if (strcmp(var.value, "CPSF-MD (6 Buttons)") == 0)
+      else if (strcmp(var.value, "CPSF-MD (8 Buttons)") == 0)
          JOY_TYPE = 1;
       else if (strcmp(var.value, "CPSF-SFC (8 Buttons)") == 0)
          JOY_TYPE = 2;
