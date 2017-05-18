@@ -34,6 +34,7 @@ int retroh=600;
 int CHANGEAV=0;
 int JOY1_TYPE;
 int JOY2_TYPE;
+int rarch_XVIMode;
 
 int pauseg=0;
 
@@ -245,6 +246,7 @@ void retro_set_environment(retro_environment_t cb)
    environ_cb = cb;
 
    struct retro_variable variables[] = {
+      { "px68k_xvimode" , "CPU Speed; 10Mhz|16Mhz|24Mhz" },
       { "px68k_analog" , "Use Analog; OFF|ON" },
       { "px68k_joytype1" , "P1 Joypad Type; Default (2 Buttons)|CPSF-MD (8 Buttons)|CPSF-SFC (8 Buttons)" },
       { "px68k_joytype2" , "P2 Joypad Type; Default (2 Buttons)|CPSF-MD (8 Buttons)|CPSF-SFC (8 Buttons)" },
@@ -260,6 +262,19 @@ static void update_variables(void)
    struct retro_variable var = {0};
 
 
+   var.key = "px68k_xvimode";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "10Mhz") == 0)
+         rarch_XVIMode = 0;
+      else if (strcmp(var.value, "16Mhz") == 0)
+         rarch_XVIMode = 1;
+      else if (strcmp(var.value, "24Mhz") == 0)
+         rarch_XVIMode = 2;
+   }
+   
    var.key = "px68k_analog";
    var.value = NULL;
 

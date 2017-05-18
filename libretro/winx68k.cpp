@@ -46,6 +46,9 @@ extern "C" {
 #include "dswin.h"
 #include "fmg_wrap.h"
 
+#include "libretro.h"
+extern int rarch_XVIMode;
+
 #ifdef RFMDRV
 int rfd_sock;
 #endif
@@ -347,16 +350,17 @@ void WinX68k_Exec(void)
 	vline = 0;
 	clk_count = -ICount;
 	clk_total = (CRTC_Regs[0x29] & 0x10) ? VSYNC_HIGH : VSYNC_NORM;
-	if (Config.XVIMode == 1) {
+	if (rarch_XVIMode == 1) {
 		clk_total = (clk_total*16)/10;
 		clkdiv = 16;
-	} else if (Config.XVIMode == 2) {
+		
+	} else if (rarch_XVIMode == 2) {
 		clk_total = (clk_total*24)/10;
 		clkdiv = 24;
 
-	}else if (Config.XVIMode == 3) {
-		clk_total = (clk_total*24)/10;
-		clkdiv = 24;
+	// }else if (Config.XVIMode == 3) {
+	// 	 clk_total = (clk_total*24)/10;
+	//   clkdiv = 24;
 
 	}else {
 		clkdiv = 10;
@@ -384,9 +388,9 @@ void WinX68k_Exec(void)
 					MFP_Int(9);
 			} else {
 				if ( CRTC_VEND>=VLINE_TOTAL ) {
-					if ( (long)vline==(CRTC_VEND-VLINE_TOTAL) ) MFP_Int(9);		// Is it "exciting hour"? （TOTAL<VEND）
+					if ( (long)vline==(CRTC_VEND-VLINE_TOTAL) ) MFP_Int(9);		// Is it Exciting Hour? （TOTAL<VEND）
 				} else {
-					if ( (long)vline==(VLINE_TOTAL-1) ) MFP_Int(9);				// It must be a "crazy climber"?
+					if ( (long)vline==(VLINE_TOTAL-1) ) MFP_Int(9);				// Is it Crazy Climber?
 				}
 			}
 		}
