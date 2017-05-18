@@ -7,6 +7,7 @@
 #include "libretro.h"
 #include "libretro/winx68k.h"
 #include "libretro/dswin.h"
+#include "libretro/prop.h"
 
 #ifdef _WIN32
 char slash = '\\';
@@ -34,7 +35,6 @@ int retroh=600;
 int CHANGEAV=0;
 int JOY1_TYPE;
 int JOY2_TYPE;
-int rarch_XVIMode;
 
 int pauseg=0;
 
@@ -268,11 +268,11 @@ static void update_variables(void)
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
       if (strcmp(var.value, "10Mhz") == 0)
-         rarch_XVIMode = 0;
+         Config.XVIMode = 0;
       else if (strcmp(var.value, "16Mhz") == 0)
-         rarch_XVIMode = 1;
+         Config.XVIMode = 1;
       else if (strcmp(var.value, "24Mhz") == 0)
-         rarch_XVIMode = 2;
+         Config.XVIMode = 2;
    }
    
    var.key = "px68k_analog";
