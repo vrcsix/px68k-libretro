@@ -92,6 +92,8 @@ static int ClkUsed = 0;
 static int FrameSkipCount = 0;
 static int FrameSkipQueue = 0;
 
+extern DWORD ram_size;
+
 #ifdef __cplusplus
 };
 #endif
@@ -935,6 +937,7 @@ extern "C" void end_loop_retro(void)
    Memory_WriteB(0xe8e00d, 0x31);                     // SRAM write permission
    Memory_WriteD(0xed0040, Memory_ReadD(0xed0040)+1); // Estimated operation time(min.)
    Memory_WriteD(0xed0044, Memory_ReadD(0xed0044)+1); // Estimated booting times
+   Memory_WriteD(0xed0008, ram_size);                 // Define RAM amount
 
    OPM_Cleanup();
 #ifndef	NO_MERCURY
