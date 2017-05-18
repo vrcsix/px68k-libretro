@@ -1,13 +1,15 @@
 
 #include <stdio.h>
-#include <stdlib.h>  
+#include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <math.h>
 
 #include "libretro.h"
 #include "libretro/winx68k.h"
 #include "libretro/dswin.h"
 #include "libretro/prop.h"
+#include "x68k/crtc.h"
 
 #ifdef _WIN32
 char slash = '\\';
@@ -15,9 +17,17 @@ char slash = '\\';
 char slash = '/';
 #endif
 
-#define SOUNDRATE 44100.0
-#define SNDSZ 795
+#define Mode1 55.45 //
+#define Mode0 59.94 /* actual value should be 61.46 fps. this is lowered to
+                     * reduced the chances of audio stutters due to mismatch
+                     * fps when most monitors are only capable upto 60Hz refresh
+                     */
 
+#define SOUNDRATE 44100.0
+#define SNDSZ round(SOUNDRATE / FRAMERATE)
+
+int vidmode = 0;
+float FRAMERATE = Mode1;
 char RPATH[512];
 char RETRO_DIR[512];
 const char *retro_save_directory;
@@ -68,7 +78,7 @@ int loadcmdfile(char *argv)
    if( fp != NULL )
    {
       if ( fgets (CMDFILE , 512 , fp) != NULL )
-         res=1;	
+         res=1;
       fclose (fp);
    }
 
@@ -109,7 +119,7 @@ void Add_Option(const char* option)
 
    if(first==0)
    {
-      PARAMCOUNT=0;	
+      PARAMCOUNT=0;
       first++;
    }
 
@@ -124,13 +134,13 @@ int pre_main(const char *argv)
    if (strlen(argv) > strlen("cmd"))
    {
       if( HandleExtension((char*)argv,"cmd") || HandleExtension((char*)argv,"CMD"))
-         i=loadcmdfile((char*)argv);     
+         i=loadcmdfile((char*)argv);
    }
 
    if(i==1)
-      parse_cmdline(CMDFILE);      
+      parse_cmdline(CMDFILE);
    else
-      parse_cmdline(argv); 
+      parse_cmdline(argv);
 
    Only1Arg = (strcmp(ARGUV[0],"px68k") == 0) ? 0 : 1;
 
@@ -139,7 +149,7 @@ int pre_main(const char *argv)
 
 
    if(Only1Arg)
-   {  
+   {
       int cfgload=0;
 
       Add_Option("px68k");
@@ -171,7 +181,7 @@ int pre_main(const char *argv)
       xargv_cmd[i] = (char*)(XARGV[i]);
    }
 
-   pmain(PARAMCOUNT,( char **)xargv_cmd); 
+   pmain(PARAMCOUNT,( char **)xargv_cmd);
 
    xargv_cmd[PARAMCOUNT - 2] = NULL;
 
@@ -214,7 +224,7 @@ void parse_cmdline(const char *argv)
                //... do something with the word ...
                for (c2 = 0,p2 = start_of_word; p2 < p; p2++, c2++)
                   ARGUV[ARGUC][c2] = (unsigned char) *p2;
-               ARGUC++; 
+               ARGUC++;
 
                state = DULL; /* back to "not in word, not in string" state */
             }
@@ -227,19 +237,19 @@ void parse_cmdline(const char *argv)
                //... do something with the word ...
                for (c2 = 0,p2 = start_of_word; p2 <p; p2++,c2++)
                   ARGUV[ARGUC][c2] = (unsigned char) *p2;
-               ARGUC++; 
+               ARGUC++;
 
                state = DULL; /* back to "not in word, not in string" state */
             }
             continue; /* either still IN_WORD or we handled the end above */
-      }	
+      }
    }
 }
 
 void texture_init(void)
 {
    memset(videoBuffer, 0, sizeof(*videoBuffer));
-} 
+}
 
 void retro_set_environment(retro_environment_t cb)
 {
@@ -274,7 +284,7 @@ static void update_variables(void)
       else if (strcmp(var.value, "24Mhz") == 0)
          Config.XVIMode = 2;
    }
-   
+
    var.key = "px68k_analog";
    var.value = NULL;
 
@@ -288,7 +298,7 @@ static void update_variables(void)
 
       fprintf(stderr, "[libretro-test]: Analog: %s.\n",opt_analog?"ON":"OFF");
    }
-   
+
    var.key = "px68k_joytype1";
    var.value = NULL;
 
@@ -354,7 +364,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
 {
    /* FIXME handle PAL/NTSC */
    struct retro_game_geometry geom = { retrow, retroh,800, 600 ,4.0 / 3.0 };
-   struct retro_system_timing timing = { 55.45, SOUNDRATE };
+   struct retro_system_timing timing = { FRAMERATE, SOUNDRATE };
 
    info->geometry = geom;
    info->timing   = timing;
@@ -363,12 +373,15 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
 void update_geometry(void)
 {
    struct retro_system_av_info system_av_info;
-   system_av_info.geometry.base_width = retrow;
-   system_av_info.geometry.base_height = retroh;
-   system_av_info.geometry.aspect_ratio = (float)4/3;// retro_aspect;
+   retro_get_system_av_info(&system_av_info);
+
+   /* using retro_get_system_av_info(), these seems unneeded anymore */
+   //system_av_info.geometry.base_width = retrow;
+   //system_av_info.geometry.base_height = retroh;
+   //system_av_info.geometry.aspect_ratio = (float)4/3;// retro_aspect;
+
    environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &system_av_info);
 }
-
 
 void retro_set_controller_port_device(unsigned port, unsigned device)
 {
@@ -453,24 +466,24 @@ void retro_init(void)
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &system_dir) && system_dir)
    {
-      // if defined, use the system directory			
-      retro_system_directory=system_dir;		
-   }		   
+      // if defined, use the system directory
+      retro_system_directory=system_dir;
+   }
 
    const char *content_dir = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_CONTENT_DIRECTORY, &content_dir) && content_dir)
    {
-      // if defined, use the system directory			
-      retro_content_directory=content_dir;		
-   }			
+      // if defined, use the system directory
+      retro_content_directory=content_dir;
+   }
 
    const char *save_dir = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &save_dir) && save_dir)
    {
       // If save directory is defined use it, otherwise use system directory
-      retro_save_directory = *save_dir ? save_dir : retro_system_directory;      
+      retro_save_directory = *save_dir ? save_dir : retro_system_directory;
    }
    else
    {
@@ -508,7 +521,7 @@ void retro_init(void)
 		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2, "L2 - Menu" },
 		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R3, "R3" },
 		{ 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L3, "L3" },
-		
+
 		{ 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A, "A" },
 		{ 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B, "B" },
 		{ 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X, "X" },
@@ -525,7 +538,7 @@ void retro_init(void)
 		{ 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2, "L2" },
 		{ 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R3, "R3" },
 		{ 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L3, "L3" },
-		
+
       { 0, 0, 0, 0, NULL }
 	};
 	environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, &inputDescriptors);
@@ -553,7 +566,14 @@ void retro_reset(void)
 static int firstcall=1;
 
 void retro_run(void)
-{       
+{
+   int last_check = vidmode;
+
+   /* This Reg is checked to see if runtime will use
+    * VSYNC_HIGH or VSYNC_NORM. Seems like a good spot to use
+    * if we needed the frontend to change fps too. */
+   vidmode = (CRTC_Regs[0x29] & 0x10);
+
    if(firstcall)
    {
       pre_main(RPATH);
@@ -566,11 +586,12 @@ void retro_run(void)
    {
       update_geometry();
       printf("w:%d h:%d a:%f\n",retrow,retroh,(float)(4/3));
+      printf("fps:%.2f sample.rate:%d\n", FRAMERATE, (int)SOUNDRATE);
       CHANGEAV=0;
    }
-   
+
    bool updated = false;
-   
+
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
    {
       update_variables();
@@ -584,8 +605,15 @@ void retro_run(void)
 
    exec_app_retro();
 
-   raudio_callback(NULL, NULL,SNDSZ*4);
+   raudio_callback(NULL, NULL, SNDSZ*4);
 
    video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
-}
 
+   if (last_check != vidmode)
+   {
+       FRAMERATE = (vidmode ? Mode1 : Mode0);
+       printf("**** V-Sync Changed! ****\n");
+       update_geometry();
+       printf("fps:%.2f sample.rate:%d\n", FRAMERATE, (int)SOUNDRATE);
+   }
+}
