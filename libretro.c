@@ -7,6 +7,7 @@
 #include "libretro.h"
 #include "libretro/winx68k.h"
 #include "libretro/dswin.h"
+#include "libretro/prop.h"
 
 #ifdef _WIN32
 char slash = '\\';
@@ -245,6 +246,7 @@ void retro_set_environment(retro_environment_t cb)
    environ_cb = cb;
 
    struct retro_variable variables[] = {
+      { "px68k_xvimode" , "CPU Speed; 10Mhz|16Mhz|24Mhz" },
       { "px68k_analog" , "Use Analog; OFF|ON" },
       { "px68k_joytype1" , "P1 Joypad Type; Default (2 Buttons)|CPSF-MD (8 Buttons)|CPSF-SFC (8 Buttons)" },
       { "px68k_joytype2" , "P2 Joypad Type; Default (2 Buttons)|CPSF-MD (8 Buttons)|CPSF-SFC (8 Buttons)" },
@@ -260,6 +262,19 @@ static void update_variables(void)
    struct retro_variable var = {0};
 
 
+   var.key = "px68k_xvimode";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "10Mhz") == 0)
+         Config.XVIMode = 0;
+      else if (strcmp(var.value, "16Mhz") == 0)
+         Config.XVIMode = 1;
+      else if (strcmp(var.value, "24Mhz") == 0)
+         Config.XVIMode = 2;
+   }
+   
    var.key = "px68k_analog";
    var.value = NULL;
 

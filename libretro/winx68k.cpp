@@ -350,13 +350,14 @@ void WinX68k_Exec(void)
 	if (Config.XVIMode == 1) {
 		clk_total = (clk_total*16)/10;
 		clkdiv = 16;
+		
 	} else if (Config.XVIMode == 2) {
 		clk_total = (clk_total*24)/10;
 		clkdiv = 24;
 
-	}else if (Config.XVIMode == 3) {
-		clk_total = (clk_total*24)/10;
-		clkdiv = 24;
+	// }else if (Config.XVIMode == 3) {
+	// 	 clk_total = (clk_total*24)/10;
+	//   clkdiv = 24;
 
 	}else {
 		clkdiv = 10;
@@ -384,9 +385,9 @@ void WinX68k_Exec(void)
 					MFP_Int(9);
 			} else {
 				if ( CRTC_VEND>=VLINE_TOTAL ) {
-					if ( (long)vline==(CRTC_VEND-VLINE_TOTAL) ) MFP_Int(9);		// Is it "exciting hour"? （TOTAL<VEND）
+					if ( (long)vline==(CRTC_VEND-VLINE_TOTAL) ) MFP_Int(9);		// Is it Exciting Hour? （TOTAL<VEND）
 				} else {
-					if ( (long)vline==(VLINE_TOTAL-1) ) MFP_Int(9);				// It must be a "crazy climber"?
+					if ( (long)vline==(VLINE_TOTAL-1) ) MFP_Int(9);				// Is it Crazy Climber?
 				}
 			}
 		}
