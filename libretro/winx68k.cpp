@@ -322,6 +322,11 @@ WinX68k_Cleanup(void)
 // -----------------------------------------------------------------------------------
 void WinX68k_Exec(void)
 {
+	if(!(Memory_ReadD(0xed0008)==ram_size)){
+		Memory_WriteB(0xe8e00d, 0x31);             // SRAM write permission
+		Memory_WriteD(0xed0008, ram_size);         // Define RAM amount
+	}
+	
 	//char *test = NULL;
 	int clk_total, clkdiv, usedclk, hsync, clk_next, clk_count, clk_line=0;
 	int KeyIntCnt = 0, MouseIntCnt = 0;
@@ -635,7 +640,7 @@ extern "C" int pmain(int argc, char *argv[])
 		Mcry_Init(100, winx68k_dir);
 #endif
 	}
-
+	
 	FDD_Init();
 	SysPort_Init();
 	Mouse_Init();
@@ -937,7 +942,6 @@ extern "C" void end_loop_retro(void)
    Memory_WriteB(0xe8e00d, 0x31);                     // SRAM write permission
    Memory_WriteD(0xed0040, Memory_ReadD(0xed0040)+1); // Estimated operation time(min.)
    Memory_WriteD(0xed0044, Memory_ReadD(0xed0044)+1); // Estimated booting times
-   Memory_WriteD(0xed0008, ram_size);                 // Define RAM amount
 
    OPM_Cleanup();
 #ifndef	NO_MERCURY
