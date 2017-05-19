@@ -248,7 +248,7 @@ void retro_set_environment(retro_environment_t cb)
 
    struct retro_variable variables[] = {
       { "px68k_xvimode" , "CPU Speed; 10Mhz|16Mhz|24Mhz" },
-	  { "px68k_ramsize" , "RAM Size; 2MB|3MB|4MB|5MB|6MB|7MB|8MB|9MB|10MB|11MB|12MB|1MB" },
+      { "px68k_ramsize" , "RAM Size; 2MB|3MB|4MB|5MB|6MB|7MB|8MB|9MB|10MB|11MB|12MB|1MB" },
       { "px68k_analog" , "Use Analog; OFF|ON" },
       { "px68k_joytype1" , "P1 Joypad Type; Default (2 Buttons)|CPSF-MD (8 Buttons)|CPSF-SFC (8 Buttons)" },
       { "px68k_joytype2" , "P2 Joypad Type; Default (2 Buttons)|CPSF-MD (8 Buttons)|CPSF-SFC (8 Buttons)" },

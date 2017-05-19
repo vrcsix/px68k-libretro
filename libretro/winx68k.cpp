@@ -640,7 +640,7 @@ extern "C" int pmain(int argc, char *argv[])
 		Mcry_Init(100, winx68k_dir);
 #endif
 	}
-	
+
 	FDD_Init();
 	SysPort_Init();
 	Mouse_Init();
