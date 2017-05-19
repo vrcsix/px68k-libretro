@@ -17,16 +17,16 @@ char slash = '\\';
 char slash = '/';
 #endif
 
-#define Mode1 55.45 //
-#define Mode0 59.94 /* actual value should be 61.46 fps. this is lowered to
+#define Mode1 55.45 /* 31 kHz - commonly used */
+#define Mode0 59.94 /* 15 kHz - actual value should be 61.46 fps. this is lowered to
                      * reduced the chances of audio stutters due to mismatch
-                     * fps when most monitors are only capable upto 60Hz refresh
-                     */
+                     * fps when vsync is used since most monitors are only capable
+                     * of upto 60Hz refresh rate. */
 
 #define SOUNDRATE 44100.0
 #define SNDSZ round(SOUNDRATE / FRAMERATE)
 
-int vidmode = 0;
+int vidmode = 1;
 float FRAMERATE = Mode1;
 char RPATH[512];
 char RETRO_DIR[512];
@@ -43,6 +43,7 @@ bool opt_analog;
 int retrow=800;
 int retroh=600;
 int CHANGEAV=0;
+int CHANGEAV_TIMING=0; /* Separate change of geometry from change of refresh rate */
 int JOY1_TYPE;
 int JOY2_TYPE;
 
@@ -373,13 +374,17 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
 void update_geometry(void)
 {
    struct retro_system_av_info system_av_info;
+   system_av_info.geometry.base_width = retrow;
+   system_av_info.geometry.base_height = retroh;
+   system_av_info.geometry.aspect_ratio = (float)4/3;// retro_aspect;
+   environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &system_av_info);
+}
+
+void update_timing(void)
+{
+   struct retro_system_av_info system_av_info;
+   FRAMERATE = (vidmode ? Mode1 : Mode0);
    retro_get_system_av_info(&system_av_info);
-
-   /* using retro_get_system_av_info(), these seems unneeded anymore */
-   //system_av_info.geometry.base_width = retrow;
-   //system_av_info.geometry.base_height = retroh;
-   //system_av_info.geometry.aspect_ratio = (float)4/3;// retro_aspect;
-
    environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &system_av_info);
 }
 
@@ -567,13 +572,6 @@ static int firstcall=1;
 
 void retro_run(void)
 {
-   int last_check = vidmode;
-
-   /* This Reg is checked to see if runtime will use
-    * VSYNC_HIGH or VSYNC_NORM. Seems like a good spot to use
-    * if we needed the frontend to change fps too. */
-   vidmode = (CRTC_Regs[0x29] & 0x10);
-
    if(firstcall)
    {
       pre_main(RPATH);
@@ -582,11 +580,17 @@ void retro_run(void)
       return;
    }
 
+   if (CHANGEAV_TIMING == 1)
+   {
+      update_timing();
+      printf("fps:%.2f soundrate:%d\n", FRAMERATE, (int)SOUNDRATE);
+      CHANGEAV_TIMING=0;
+   }
+
    if (CHANGEAV == 1)
    {
       update_geometry();
-      printf("w:%d h:%d a:%f\n",retrow,retroh,(float)(4/3));
-      printf("fps:%.2f sample.rate:%d\n", FRAMERATE, (int)SOUNDRATE);
+      printf("w:%d h:%d a:%.3f\n",retrow,retroh,(float)(4/3));
       CHANGEAV=0;
    }
 
@@ -608,12 +612,5 @@ void retro_run(void)
    raudio_callback(NULL, NULL, SNDSZ*4);
 
    video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
-
-   if (last_check != vidmode)
-   {
-       FRAMERATE = (vidmode ? Mode1 : Mode0);
-       printf("**** V-Sync Changed! ****\n");
-       update_geometry();
-       printf("fps:%.2f sample.rate:%d\n", FRAMERATE, (int)SOUNDRATE);
-   }
 }
+
