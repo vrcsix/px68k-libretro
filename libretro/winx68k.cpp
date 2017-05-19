@@ -92,6 +92,8 @@ static int ClkUsed = 0;
 static int FrameSkipCount = 0;
 static int FrameSkipQueue = 0;
 
+extern DWORD ram_size;
+
 #ifdef __cplusplus
 };
 #endif
@@ -320,6 +322,11 @@ WinX68k_Cleanup(void)
 // -----------------------------------------------------------------------------------
 void WinX68k_Exec(void)
 {
+	if(!(Memory_ReadD(0xed0008)==ram_size)){
+		Memory_WriteB(0xe8e00d, 0x31);             // SRAM write permission
+		Memory_WriteD(0xed0008, ram_size);         // Define RAM amount
+	}
+	
 	//char *test = NULL;
 	int clk_total, clkdiv, usedclk, hsync, clk_next, clk_count, clk_line=0;
 	int KeyIntCnt = 0, MouseIntCnt = 0;

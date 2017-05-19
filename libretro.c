@@ -46,6 +46,7 @@ int CHANGEAV=0;
 int CHANGEAV_TIMING=0; /* Separate change of geometry from change of refresh rate */
 int JOY1_TYPE;
 int JOY2_TYPE;
+DWORD ram_size;
 
 int pauseg=0;
 
@@ -258,6 +259,7 @@ void retro_set_environment(retro_environment_t cb)
 
    struct retro_variable variables[] = {
       { "px68k_xvimode" , "CPU Speed; 10Mhz|16Mhz|24Mhz" },
+      { "px68k_ramsize" , "RAM Size (Restart); 2MB|3MB|4MB|5MB|6MB|7MB|8MB|9MB|10MB|11MB|12MB|1MB" },
       { "px68k_analog" , "Use Analog; OFF|ON" },
       { "px68k_joytype1" , "P1 Joypad Type; Default (2 Buttons)|CPSF-MD (8 Buttons)|CPSF-SFC (8 Buttons)" },
       { "px68k_joytype2" , "P2 Joypad Type; Default (2 Buttons)|CPSF-MD (8 Buttons)|CPSF-SFC (8 Buttons)" },
@@ -286,6 +288,37 @@ static void update_variables(void)
          Config.XVIMode = 2;
    }
 
+   var.key = "px68k_ramsize";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "1MB") == 0)
+         ram_size = 0x100000;
+      else if (strcmp(var.value, "2MB") == 0)
+         ram_size = 0x200000;
+      else if (strcmp(var.value, "3MB") == 0)
+         ram_size = 0x300000;
+      else if (strcmp(var.value, "4MB") == 0)
+         ram_size = 0x400000;
+      else if (strcmp(var.value, "5MB") == 0)
+         ram_size = 0x500000;
+      else if (strcmp(var.value, "6MB") == 0)
+         ram_size = 0x600000;
+      else if (strcmp(var.value, "7MB") == 0)
+         ram_size = 0x700000;
+      else if (strcmp(var.value, "8MB") == 0)
+         ram_size = 0x800000;
+      else if (strcmp(var.value, "9MB") == 0)
+         ram_size = 0x900000;
+      else if (strcmp(var.value, "10MB") == 0)
+         ram_size = 0xa00000;
+      else if (strcmp(var.value, "11MB") == 0)
+         ram_size = 0xb00000;
+      else if (strcmp(var.value, "12MB") == 0)
+         ram_size = 0xc00000;
+   }
+  
    var.key = "px68k_analog";
    var.value = NULL;
 
