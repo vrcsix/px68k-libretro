@@ -383,8 +383,8 @@ void update_geometry(void)
 void update_timing(void)
 {
    struct retro_system_av_info system_av_info;
-   FRAMERATE = (vidmode ? Mode1 : Mode0);
-   retro_get_system_av_info(&system_av_info);
+   system_av_info.timing.fps = FRAMERATE;
+   system_av_info.timing.sample_rate = SOUNDRATE;
    environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &system_av_info);
 }
 
@@ -582,6 +582,7 @@ void retro_run(void)
 
    if (CHANGEAV_TIMING == 1)
    {
+      FRAMERATE = (vidmode ? Mode1 : Mode0);
       update_timing();
       printf("fps:%.2f soundrate:%d\n", FRAMERATE, (int)SOUNDRATE);
       CHANGEAV_TIMING=0;
