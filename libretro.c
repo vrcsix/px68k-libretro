@@ -9,7 +9,6 @@
 #include "libretro/winx68k.h"
 #include "libretro/dswin.h"
 #include "libretro/prop.h"
-#include "x68k/crtc.h"
 
 #ifdef _WIN32
 char slash = '\\';
@@ -318,7 +317,7 @@ static void update_variables(void)
       else if (strcmp(var.value, "12MB") == 0)
          ram_size = 0xc00000;
    }
-  
+
    var.key = "px68k_analog";
    var.value = NULL;
 
@@ -416,9 +415,13 @@ void update_geometry(void)
 void update_timing(void)
 {
    struct retro_system_av_info system_av_info;
+   /* retro_get_system_av_info(&system_av_info); */
+   FRAMERATE = (vidmode ? Mode1 : Mode0);
+   /* Updating system_av_info.timing.fps seems enough for a fps update */
+   /* unless this is a bug? Since it works, lets just to it this way atm. */
    system_av_info.timing.fps = FRAMERATE;
-   system_av_info.timing.sample_rate = SOUNDRATE;
-   environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &system_av_info);
+
+   /* environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &system_av_info); */
 }
 
 void retro_set_controller_port_device(unsigned port, unsigned device)
@@ -615,8 +618,8 @@ void retro_run(void)
 
    if (CHANGEAV_TIMING == 1)
    {
-      FRAMERATE = (vidmode ? Mode1 : Mode0);
       update_timing();
+      printf("w:%d h:%d a:%.3f\n",retrow,retroh,(float)(4/3));
       printf("fps:%.2f soundrate:%d\n", FRAMERATE, (int)SOUNDRATE);
       CHANGEAV_TIMING=0;
    }
@@ -625,6 +628,7 @@ void retro_run(void)
    {
       update_geometry();
       printf("w:%d h:%d a:%.3f\n",retrow,retroh,(float)(4/3));
+      printf("fps:%.2f soundrate:%d\n", FRAMERATE, (int)SOUNDRATE);
       CHANGEAV=0;
    }
 
