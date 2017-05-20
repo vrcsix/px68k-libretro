@@ -93,6 +93,7 @@ static int FrameSkipCount = 0;
 static int FrameSkipQueue = 0;
 
 extern DWORD ram_size;
+extern int clockmhz;
 
 #ifdef __cplusplus
 };
@@ -359,8 +360,8 @@ void WinX68k_Exec(void)
 		clkdiv = 16;
 		
 	} else if (Config.XVIMode == 2) {
-		clk_total = (clk_total*24)/10;
-		clkdiv = 24;
+		clk_total = (clk_total*clockmhz)/10;
+		clkdiv = clockmhz;
 
 	// }else if (Config.XVIMode == 3) {
 	// 	 clk_total = (clk_total*24)/10;
