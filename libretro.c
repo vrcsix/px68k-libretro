@@ -8,7 +8,6 @@
 #include "libretro.h"
 #include "libretro/winx68k.h"
 #include "libretro/dswin.h"
-#include "libretro/prop.h"
 
 #ifdef _WIN32
 char slash = '\\';
@@ -45,7 +44,7 @@ int CHANGEAV=0;
 int CHANGEAV_TIMING=0; /* Separate change of geometry from change of refresh rate */
 int JOY1_TYPE;
 int JOY2_TYPE;
-int clockmhz = 24;
+int clockmhz = 10;
 DWORD ram_size;
 
 int pauseg=0;
@@ -258,7 +257,7 @@ void retro_set_environment(retro_environment_t cb)
    environ_cb = cb;
 
    struct retro_variable variables[] = {
-      { "px68k_xvimode" , "CPU Speed; 10Mhz|16Mhz|24Mhz|33Mhz (OC)|66Mhz (OC)|100Mhz (OC)|150Mhz (OC)|200Mhz (OC)" },
+      { "px68k_cpuspeed" , "CPU Speed; 10Mhz|16Mhz|25Mhz|33Mhz (OC)|66Mhz (OC)|100Mhz (OC)|150Mhz (OC)|200Mhz (OC)" },
       { "px68k_ramsize" , "RAM Size (Restart); 2MB|3MB|4MB|5MB|6MB|7MB|8MB|9MB|10MB|11MB|12MB|1MB" },
       { "px68k_analog" , "Use Analog; OFF|ON" },
       { "px68k_joytype1" , "P1 Joypad Type; Default (2 Buttons)|CPSF-MD (8 Buttons)|CPSF-SFC (8 Buttons)" },
@@ -275,34 +274,27 @@ static void update_variables(void)
    struct retro_variable var = {0};
 
 
-   var.key = "px68k_xvimode";
+   var.key = "px68k_cpuspeed";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
       if (strcmp(var.value, "10Mhz") == 0)
-         Config.XVIMode = 0;
+         clockmhz = 10;
       else if (strcmp(var.value, "16Mhz") == 0)
-         Config.XVIMode = 1;
-      else if (strcmp(var.value, "24Mhz") == 0){
-         Config.XVIMode = 2;
-         clockmhz = 24;
-      }else if (strcmp(var.value, "33Mhz (OC)") == 0){
-         Config.XVIMode = 2;
+         clockmhz = 16;
+      else if (strcmp(var.value, "25Mhz") == 0)
+         clockmhz = 25;
+      else if (strcmp(var.value, "33Mhz (OC)") == 0)
          clockmhz = 33;
-      }else if (strcmp(var.value, "66Mhz (OC)") == 0){
-         Config.XVIMode = 2;
+      else if (strcmp(var.value, "66Mhz (OC)") == 0)
          clockmhz = 66;
-      }else if (strcmp(var.value, "100Mhz (OC)") == 0){
-         Config.XVIMode = 2;
+      else if (strcmp(var.value, "100Mhz (OC)") == 0)
          clockmhz = 100;
-      }else if (strcmp(var.value, "150Mhz (OC)") == 0){
-         Config.XVIMode = 2;
+      else if (strcmp(var.value, "150Mhz (OC)") == 0)
          clockmhz = 150;
-      }else if (strcmp(var.value, "200Mhz (OC)") == 0){
-         Config.XVIMode = 2;
+      else if (strcmp(var.value, "200Mhz (OC)") == 0)
          clockmhz = 200;
-      }
    }
 
    var.key = "px68k_ramsize";
