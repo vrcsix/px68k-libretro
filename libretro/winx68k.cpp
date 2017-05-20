@@ -95,6 +95,9 @@ static int FrameSkipQueue = 0;
 extern DWORD ram_size;
 extern int clockmhz;
 
+DWORD old_ram_size = 0;
+int old_clkdiv = 0;
+
 #ifdef __cplusplus
 };
 #endif
@@ -370,6 +373,14 @@ void WinX68k_Exec(void)
 	}else {
 		clkdiv = 10;
 	}
+
+	if(clkdiv != old_clkdiv || ram_size != old_ram_size){
+		printf("CPU Clock: %d%s\n",clkdiv,"MHz");
+		printf("RAM Size: %ld%s\n",ram_size/1000000,"MB");
+		old_clkdiv = clkdiv;
+		old_ram_size = ram_size;	
+	}
+
 	ICount += clk_total;
 	clk_next = (clk_total/VLINE_TOTAL);
 	hsync = 1;
