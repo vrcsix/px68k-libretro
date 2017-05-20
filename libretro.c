@@ -45,7 +45,7 @@ int CHANGEAV=0;
 int CHANGEAV_TIMING=0; /* Separate change of geometry from change of refresh rate */
 int JOY1_TYPE;
 int JOY2_TYPE;
-int clockmhz = 10;
+int clockmhz = 24;
 DWORD ram_size;
 
 int pauseg=0;
