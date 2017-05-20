@@ -358,21 +358,19 @@ void WinX68k_Exec(void)
 	vline = 0;
 	clk_count = -ICount;
 	clk_total = (CRTC_Regs[0x29] & 0x10) ? VSYNC_HIGH : VSYNC_NORM;
-	if (Config.XVIMode == 1) {
-		clk_total = (clk_total*16)/10;
-		clkdiv = 16;
-		
-	} else if (Config.XVIMode == 2) {
-		clk_total = (clk_total*clockmhz)/10;
-		clkdiv = clockmhz;
 
-	// }else if (Config.XVIMode == 3) {
-	// 	 clk_total = (clk_total*24)/10;
-	//   clkdiv = 24;
-
-	}else {
-		clkdiv = 10;
-	}
+	clk_total = (clk_total*clockmhz)/10;
+	clkdiv = clockmhz;
+	
+//	if (Config.XVIMode == 1) {
+//		clk_total = (clk_total*16)/10;
+//		clkdiv = 16;
+//	} else if (Config.XVIMode == 2) {
+//		clk_total = (clk_total*24)/10;
+//		clkdiv = 24;
+//	} else {
+//		clkdiv = 10;
+//	}
 
 	if(clkdiv != old_clkdiv || ram_size != old_ram_size){
 		printf("CPU Clock: %d%s\n",clkdiv,"MHz");
