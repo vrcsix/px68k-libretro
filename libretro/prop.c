@@ -275,7 +275,7 @@ void LoadConfig(void)
 
 	Config.VbtnSwap = GetPrivateProfileInt(ini_title, "VbtnSwap", 0, winx68k_ini);
 
-	Config.JoyOrMouse = GetPrivateProfileInt(ini_title, "JoyOrMouse", 0, winx68k_ini);
+	Config.JoyOrMouse = GetPrivateProfileInt(ini_title, "JoyOrMouse", 1, winx68k_ini);
 
 	Config.HwJoyAxis[0] = GetPrivateProfileInt(ini_title, "HwJoyAxis0", 0, winx68k_ini);
 
