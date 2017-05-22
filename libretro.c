@@ -612,6 +612,7 @@ void retro_deinit(void)
 
 void retro_reset(void)
 {
+   WinX68k_Reset();
 }
 
 static int firstcall=1;
