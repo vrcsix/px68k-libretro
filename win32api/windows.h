@@ -77,7 +77,14 @@ typedef	void *		DRAWITEMSTRUCT;
  */
 #define	WINAPI
 #define	CALLBACK
+
+#ifdef __GNUC__
+#ifndef UNUSED
+#define UNUSED __attribute ((unused))
+#endif
+#else
 #define	UNUSED(v)	((void)(v))
+#endif
 
 #ifndef	INLINE
 #define	INLINE	static inline

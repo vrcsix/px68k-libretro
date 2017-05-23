@@ -14,7 +14,16 @@
 #define	SUCCESS		0
 #define	FAILURE		1
 
+#ifndef FASTCALL
+#ifdef __MINGW32__
+#define FASTCALL __attribute__((fastcall))
+#elif defined (__i386__)
+#define FASTCALL __attribute__((regparm(3)))
+#else
 #define FASTCALL
+#endif
+#endif
+
 #define STDCALL
 #define	LABEL
 #define	__stdcall
