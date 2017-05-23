@@ -40,7 +40,7 @@
 #endif
 #endif
 
-// redefined in common.h
+/* redefined in common.h */
 /* #ifndef FASTCALL
 #ifdef __MINGW32__
 #define FASTCALL __attribute__((fastcall))
@@ -283,9 +283,10 @@ static INLINE int StateCheckRetrieveHeader(FILE *fp, const char *name, int *vers
 
 #ifdef __GNUC__
 
-#ifndef UNUSED
+/* redefined in windows.h */
+/* #ifndef UNUSED
 #define UNUSED __attribute ((unused))
-#endif
+#endif */
 
 #ifdef DEBUG
 #define USED_IF_DEBUG
@@ -307,7 +308,7 @@ static INLINE int StateCheckRetrieveHeader(FILE *fp, const char *name, int *vers
 
 #else
 
-#define UNUSED
+/* #define UNUSED */ /* redefined */
 #define USED_IF_DEBUG
 #define USED_IF_SMPC_DEBUG
 #define LIKELY(x) (x)
