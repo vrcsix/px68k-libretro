@@ -40,7 +40,8 @@
 #endif
 #endif
 
-#ifndef FASTCALL
+// redefined in common.h
+/* #ifndef FASTCALL
 #ifdef __MINGW32__
 #define FASTCALL __attribute__((fastcall))
 #elif defined (__i386__)
@@ -48,7 +49,7 @@
 #else
 #define FASTCALL
 #endif
-#endif
+#endif */
 
 /* When building multiple arches on OS X you must use the compiler-
    provided endian flags instead of the one provided by autoconf */
