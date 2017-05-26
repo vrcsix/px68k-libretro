@@ -656,6 +656,7 @@ void retro_run(void)
    if(firstcall)
    {
       pre_main(RPATH);
+      update_variables();
       firstcall=0;
       printf("INIT done\n");
       return;
