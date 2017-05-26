@@ -8,6 +8,9 @@
 #include "libretro.h"
 #include "libretro/winx68k.h"
 #include "libretro/dswin.h"
+#include "libretro/prop.h"
+#include "fmgen/fmg_wrap.h"
+#include "x68k/adpcm.h"
 
 #ifdef _WIN32
 char slash = '\\';
@@ -15,8 +18,8 @@ char slash = '\\';
 char slash = '/';
 #endif
 
-#define Mode1 55.45 /* 31 kHz - commonly used */
-#define Mode0 59.94 /* 15 kHz - actual value should be 61.46 fps. this is lowered to
+#define Mode1 55.45 /* 31.50 kHz - commonly used */
+#define Mode0 59.94 /* 15.98 kHz - actual value should be ~61.46 fps. this is lowered to
                      * reduced the chances of audio stutters due to mismatch
                      * fps when vsync is used since most monitors are only capable
                      * of upto 60Hz refresh rate. */
@@ -46,6 +49,7 @@ int JOY1_TYPE;
 int JOY2_TYPE;
 int clockmhz = 10;
 DWORD ram_size;
+int pcm_vol, opm_vol;
 
 int pauseg=0;
 
@@ -262,6 +266,11 @@ void retro_set_environment(retro_environment_t cb)
       { "px68k_analog" , "Use Analog; OFF|ON" },
       { "px68k_joytype1" , "P1 Joypad Type; Default (2 Buttons)|CPSF-MD (8 Buttons)|CPSF-SFC (8 Buttons)" },
       { "px68k_joytype2" , "P2 Joypad Type; Default (2 Buttons)|CPSF-MD (8 Buttons)|CPSF-SFC (8 Buttons)" },
+      { "px68k_adpcm_vol" , "ADPCM Volume; 15|0|1|2|3|4|5|6|7|8|9|10|11|12|13|14" },
+      { "px68k_opm_vol" , "OPM Volume; 12|13|14|15|0|1|2|3|4|5|6|7|8|9|10|11" },
+#ifndef NO_MERCURY
+      { "px68k_mercury_vol" , "OPM Volume; 13|14|15|0|1|2|3|4|5|6|7|8|9|10|11|12" },
+#endif
       { NULL, NULL },
    };
 
@@ -272,7 +281,6 @@ void retro_set_environment(retro_environment_t cb)
 static void update_variables(void)
 {
    struct retro_variable var = {0};
-
 
    var.key = "px68k_cpuspeed";
    var.value = NULL;
@@ -366,6 +374,32 @@ static void update_variables(void)
          JOY2_TYPE = 1;
       else if (strcmp(var.value, "CPSF-SFC (8 Buttons)") == 0)
          JOY2_TYPE = 2;
+   }
+
+   var.key = "px68k_adpcm_vol";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      pcm_vol = atoi(var.value);
+      if (pcm_vol != Config.PCM_VOL)
+      {
+         Config.PCM_VOL = pcm_vol;
+         ADPCM_SetVolume((BYTE)Config.PCM_VOL);
+      }
+   }
+
+   var.key = "px68k_opm_vol";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      opm_vol = atoi(var.value);
+      if (opm_vol != Config.OPM_VOL)
+      {
+         Config.OPM_VOL = opm_vol;
+         OPM_SetVolume((BYTE)Config.OPM_VOL);
+      }
    }
 }
 
