@@ -73,9 +73,7 @@ int D88_SetFD(int drv, char* filename)
 
 	for (trk=0; trk<164; trk++) {
 		long ptr = D88Head[drv].trackp[trk];
-		D88_SECTINFO *si, *oldsi = NULL;
-		
-		oldsi = (D88_SECTINFO*)malloc(sizeof(D88_SECTINFO));   //fix for libretro
+		D88_SECTINFO *si, *oldsi;
 		
 		if ( (ptr>=(long)sizeof(D88_HEADER))&&(ptr<D88Head[drv].fd_size) ) {
 			d88s.sectors = 65535;
