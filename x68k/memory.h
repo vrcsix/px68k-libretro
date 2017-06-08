@@ -20,7 +20,6 @@ extern  BYTE    SRAM[0x4000];
 extern  BYTE    GVRAM[0x80000];
 extern  BYTE   TVRAM[0x80000];
 
-
 extern	DWORD	BusErrFlag;
 extern	DWORD	BusErrAdr;
 extern	DWORD	MemByteAccess;

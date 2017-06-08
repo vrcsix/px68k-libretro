@@ -1,7 +1,9 @@
 #ifndef winx68k_common_h
 #define winx68k_common_h
 
+#ifdef _WIN32
 #include "windows.h"
+#endif
 #include <stdio.h>
 #include <string.h>
 
@@ -34,6 +36,18 @@ typedef unsigned int	UINT32;
 typedef signed char	INT8;
 typedef signed short	INT16;
 typedef signed int	INT32;
+
+#ifndef BYTE
+typedef unsigned BYTE;
+#endif
+
+#ifndef WORD
+typedef uint16_t WORD;
+#endif
+
+#ifndef DWORD
+typedef uint32_t DWORD;
+#endif
 
 typedef union {
 	struct {
