@@ -900,7 +900,7 @@ static void set_subx_flag(void)
         case SIZE_LONG:
             wf_op("\tCPU->flag_notZ |= res;\n");
 //ORIG	        wf_op("\tCPU->flag_X = CPU->flag_C = ((src & res & 1) + (src >> 1) + (res >> 1)) >> 23;\n");
-	        wf_op("\tCPU->flag_X = CPU->flag_C = ((((src & 1) + (res & 1) + (((FLAG_X >> 8) & 1) & 1)) >> 1) + (src >> 1) + (res >> 1)) >> 23;\n");
+	        wf_op("\tCPU->flag_X = CPU->flag_C = ((((src & 1) + (res & 1) + (((CPU->flag_X >> 8) & 1) & 1)) >> 1) + (src >> 1) + (res >> 1)) >> 23;\n");
 //            wf_op("\tCPU->flag_X = CPU->flag_C = ((src & res) | (~dst & (src | res))) >> 23;\n");
         	wf_op("\tCPU->flag_V = ((src ^ dst) & (res ^ dst)) >> 24;\n");
             wf_op("\tCPU->flag_N = res >> 24;\n");
