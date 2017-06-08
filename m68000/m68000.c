@@ -15,7 +15,7 @@ struct Cyclone m68k;
 typedef signed int s32;
 #endif
 
-#include "../x68k/memory.h"
+#include "../x68k/x68kmemory.h"
 
 int m68000_ICountBk;
 int ICount;

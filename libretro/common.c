@@ -4,8 +4,10 @@
 //#include	<windows.h>
 #include <stdio.h>
 #include <stdarg.h>
+#ifdef DEBUG
 #ifdef ANDROID
 #include <android/log.h>
+#endif
 #endif
 
 //#include	"sstp.h"
@@ -36,11 +38,16 @@ void p6logd(const char *fmt, ...)
 	vsnprintf(p6l_buf, P6L_LEN, fmt, args);
 	va_end(args);
 
+#ifdef DEBUG
 #if defined(ANDROID)
 	__android_log_write(ANDROID_LOG_DEBUG, "Tag", p6l_buf);
 #elif defined(PSP)
 	printf("%s", p6l_buf);
 #else
 	printf("%s", p6l_buf);
+#endif
+#else
+   /* TODO/FIXME */
+   /* Instead of platform-specific stuff, we should use log_cb calls here */
 #endif
 }

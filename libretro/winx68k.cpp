@@ -15,7 +15,7 @@ extern "C" {
 #include "winui.h"
 #include "../x68k/m68000.h" // xxx perhaps not needed
 #include "../m68000/m68000.h"
-#include "../x68k/memory.h"
+#include "../x68k/x68kmemory.h"
 #include "mfp.h"
 #include "opm.h"
 #include "bg.h"
