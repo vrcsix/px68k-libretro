@@ -1,18 +1,21 @@
-#ifndef winx68k_common_h
-#define winx68k_common_h
+#ifndef _LIBRETRO_WINX68K_COMMON_H
+#define _LIBRETRO_WINX68K_COMMON_H
 
 #ifdef _WIN32
 #include "windows.h"
 #endif
+
 #include <stdio.h>
 #include <string.h>
+
+#ifndef _WIN32
+#include "../win32api/windows.h"
+#endif
 
 #ifdef __APPLE__
 #include "TargetConditionals.h"
 #endif
 
-#define	TRUE		1
-#define	FALSE		0
 #define	SUCCESS		0
 #define	FAILURE		1
 
@@ -37,18 +40,6 @@ typedef signed char	INT8;
 typedef signed short	INT16;
 typedef signed int	INT32;
 
-#ifndef BYTE
-typedef unsigned BYTE;
-#endif
-
-#ifndef WORD
-typedef uint16_t WORD;
-#endif
-
-#ifndef DWORD
-typedef uint32_t DWORD;
-#endif
-
 typedef union {
 	struct {
 		BYTE l;
@@ -68,4 +59,4 @@ void p6logd(const char *fmt, ...);
 }
 #endif
 
-#endif //winx68k_common_h
+#endif

@@ -52,6 +52,10 @@ typedef	HANDLE		HGLOBAL;
 
 typedef	void *		DRAWITEMSTRUCT;
 
+#ifndef FASTCALL
+#define FASTCALL
+#endif
+
 #ifndef	TRUE
 #define	TRUE	1
 #endif

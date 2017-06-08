@@ -1,5 +1,5 @@
-#ifndef _winx68k_memory
-#define _winx68k_memory
+#ifndef _WINX68K_MEMORY_H
+#define _WINX68K_MEMORY_H
 
 #include "../libretro/common.h"
 
