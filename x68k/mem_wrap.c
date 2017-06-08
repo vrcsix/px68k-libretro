@@ -559,8 +559,7 @@ Memory_SetSCSIMode(void)
 	}
 }
 
-void 
-Memory_ErrTrace(void)
+void Memory_ErrTrace(void)
 {
 #ifdef WIN68DEBUG
 	FILE *fp;
