@@ -10,6 +10,7 @@
 #define M68000_H
 
 #ifndef CYCLONE
+#include "common.h"
 #include "c68k/c68k.h"
 #else
 #include "common.h"
