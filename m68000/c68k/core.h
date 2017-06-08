@@ -40,8 +40,7 @@
 #endif
 #endif
 
-/* redefined in common.h */
-/* #ifndef FASTCALL
+#ifndef FASTCALL
 #ifdef __MINGW32__
 #define FASTCALL __attribute__((fastcall))
 #elif defined (__i386__)
@@ -49,7 +48,7 @@
 #else
 #define FASTCALL
 #endif
-#endif */
+#endif
 
 /* When building multiple arches on OS X you must use the compiler-
    provided endian flags instead of the one provided by autoconf */
@@ -283,10 +282,9 @@ static INLINE int StateCheckRetrieveHeader(FILE *fp, const char *name, int *vers
 
 #ifdef __GNUC__
 
-/* redefined in windows.h */
-/* #ifndef UNUSED
+#ifndef UNUSED
 #define UNUSED __attribute ((unused))
-#endif */
+#endif
 
 #ifdef DEBUG
 #define USED_IF_DEBUG
@@ -308,7 +306,7 @@ static INLINE int StateCheckRetrieveHeader(FILE *fp, const char *name, int *vers
 
 #else
 
-/* #define UNUSED */ /* redefined */
+#define UNUSED
 #define USED_IF_DEBUG
 #define USED_IF_SMPC_DEBUG
 #define LIKELY(x) (x)

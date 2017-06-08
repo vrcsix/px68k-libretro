@@ -827,6 +827,7 @@ static void set_add_flag(void)
 	}
 }
 
+
 static void set_addx_flag(void)
 {
     switch(current_size)
@@ -845,7 +846,8 @@ static void set_addx_flag(void)
 
         case SIZE_LONG:
             wf_op("\tCPU->flag_notZ |= res;\n");
-	        wf_op("\tCPU->flag_X = CPU->flag_C = ((src & dst & 1) + (src >> 1) + (dst >> 1)) >> 23;\n");
+//ORIG	        wf_op("\tCPU->flag_X = CPU->flag_C = ((src & dst & 1) + (src >> 1) + (dst >> 1)) >> 23;\n");
+	        wf_op("\tCPU->flag_X = CPU->flag_C = ((((src & 1) + (dst & 1) + (((CPU->flag_X >> 8) & 1) & 1)) >> 1) + (src >> 1) + (dst >> 1)) >> 23;\n");
 //            wf_op("\tCPU->flag_X = CPU->flag_C = ((src & dst) | (~res & (src | dst))) >> 23;\n");
         	wf_op("\tCPU->flag_V = ((src ^ res) & (dst ^ res)) >> 24;\n");
             wf_op("\tCPU->flag_N = res >> 24;\n");
@@ -897,7 +899,8 @@ static void set_subx_flag(void)
 
         case SIZE_LONG:
             wf_op("\tCPU->flag_notZ |= res;\n");
-	        wf_op("\tCPU->flag_X = CPU->flag_C = ((src & res & 1) + (src >> 1) + (res >> 1)) >> 23;\n");
+//ORIG	        wf_op("\tCPU->flag_X = CPU->flag_C = ((src & res & 1) + (src >> 1) + (res >> 1)) >> 23;\n");
+	        wf_op("\tCPU->flag_X = CPU->flag_C = ((((src & 1) + (res & 1) + (((FLAG_X >> 8) & 1) & 1)) >> 1) + (src >> 1) + (res >> 1)) >> 23;\n");
 //            wf_op("\tCPU->flag_X = CPU->flag_C = ((src & res) | (~dst & (src | res))) >> 23;\n");
         	wf_op("\tCPU->flag_V = ((src ^ dst) & (res ^ dst)) >> 24;\n");
             wf_op("\tCPU->flag_N = res >> 24;\n");
