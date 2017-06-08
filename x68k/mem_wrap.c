@@ -45,6 +45,9 @@ static BYTE rm_opm(DWORD addr);
 static BYTE rm_e82(DWORD addr);
 static BYTE rm_buserr(DWORD addr);
 
+void cpu_setOPbase24(DWORD addr);
+void Memory_ErrTrace(void);
+
 BYTE (*MemReadTable[])(DWORD) = {
 	TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read,
 	TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read,
