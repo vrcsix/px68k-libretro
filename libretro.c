@@ -18,7 +18,7 @@ char slash = '\\';
 char slash = '/';
 #endif
 
-#define Mode1 55.45 /* 31.50 kHz - commonly used */
+#define Mode1 55.45 /* 31.50 kHz - commonly used  */
 #define Mode0 59.94 /* 15.98 kHz - actual value should be ~61.46 fps. this is lowered to
                      * reduced the chances of audio stutters due to mismatch
                      * fps when vsync is used since most monitors are only capable
