@@ -27,6 +27,7 @@ char slash = '/';
 #define SOUNDRATE 44100.0
 #define SNDSZ round(SOUNDRATE / FRAMERATE)
 
+
 int vidmode = 1;
 float FRAMERATE = Mode1;
 char RPATH[512];
