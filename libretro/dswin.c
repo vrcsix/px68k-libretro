@@ -78,13 +78,19 @@ DSound_Init(unsigned long rate, unsigned long buflen)
 void
 DSound_Play(void)
 {
-   //	if (audio_fd >= 0);
+   	if (audio_fd >= 0) {
+		ADPCM_SetVolume((BYTE)Config.PCM_VOL);
+		OPM_SetVolume((BYTE)Config.OPM_VOL);	
+	}
 }
 
 void
 DSound_Stop(void)
 {
-   //	if (audio_fd >= 0);
+   	if (audio_fd >= 0) {
+		ADPCM_SetVolume(0);
+		OPM_SetVolume(0);	
+	}
 }
 
 int
