@@ -753,7 +753,7 @@ extern "C" void handle_retrok(){
 		KEYP(RETROK_0+i,0x1+i);
 	KEYP(RETROK_0,0xb);
 	KEYP(RETROK_MINUS,0xc);
-	KEYP(RETROK_QUOTE,0xd);
+	KEYP(RETROK_QUOTE,0x28); // colon :
 	KEYP(RETROK_BACKSPACE,0xf);
 
 	KEYP(RETROK_TAB,0x10);
@@ -770,7 +770,7 @@ extern "C" void handle_retrok(){
 	KEYP(RETROK_BACKQUOTE,0x1B);
 	KEYP(RETROK_LEFTBRACKET,0x1C);
 	KEYP(RETROK_RETURN,0x1d);
-	KEYP(RETROK_EQUALS,0xe); //Yen symbol ¥ (equals is on shift+minus)
+	KEYP(RETROK_EQUALS,0xd); // caret ^
 
 	KEYP(RETROK_a,0x1e);
 	KEYP(RETROK_s,0x1f);
@@ -781,9 +781,8 @@ extern "C" void handle_retrok(){
 	KEYP(RETROK_j,0x24);
 	KEYP(RETROK_k,0x25);
 	KEYP(RETROK_l,0x26);
-	KEYP(RETROK_PLUS,0x27);
 	KEYP(RETROK_SEMICOLON,0x27);
-	KEYP(RETROK_BACKSLASH,0x28); // colon :
+	KEYP(RETROK_BACKSLASH,0xe); // Yen symbol ¥
 	KEYP(RETROK_RIGHTBRACKET,0x29);
 
 	KEYP(RETROK_z,0x2a);
@@ -796,7 +795,7 @@ extern "C" void handle_retrok(){
 	KEYP(RETROK_COMMA,0x31);
 	KEYP(RETROK_PERIOD,0x32);
 	KEYP(RETROK_SLASH,0x33);
-	KEYP(RETROK_LESS,0x34); //FIXME: VK_EOM_102 0x34 [\_]
+	KEYP(RETROK_0,0x34); // underquote _ as shift+0 which was empty, Japanese chars can't overlap as we're not using them
 
 	KEYP(RETROK_SPACE,0x35);
 	KEYP(RETROK_HOME,0x36);
