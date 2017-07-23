@@ -365,7 +365,7 @@ cpu_readmem24(DWORD addr)
 
 	v = rm_main(addr);
 	if (BusErrFlag & 1) {
-		printf("func = %s addr = %x flag = %d\n", __func__, addr, BusErrFlag);
+		p6logd("func = %s addr = %x flag = %d\n", __func__, addr, BusErrFlag);
 		Memory_ErrTrace();
 		BusError(addr, 0);
 	}
@@ -387,7 +387,7 @@ cpu_readmem24_word(DWORD addr)
 	v = rm_main(addr++) << 8;
 	v |= rm_main(addr);
 	if (BusErrFlag & 1) {
-		printf("func = %s addr = %x flag = %d\n", __func__, addr, BusErrFlag);
+		p6logd("func = %s addr = %x flag = %d\n", __func__, addr, BusErrFlag);
 		Memory_ErrTrace();
 		BusError(addr, 0);
 	}
@@ -403,7 +403,7 @@ cpu_readmem24_dword(DWORD addr)
 
 	if (addr & 1) {
 		BusErrFlag = 3;
-		printf("func = %s addr = %x\n", __func__, addr);
+		p6logd("func = %s addr = %x\n", __func__, addr);
 		return 0;
 	}
 
@@ -483,7 +483,7 @@ rm_e82(DWORD addr)
 static BYTE 
 rm_buserr(DWORD addr)
 {
-    printf("func = %s addr = %x flag = %d\n", __func__, addr, BusErrFlag);
+    p6logd("func = %s addr = %x flag = %d\n", __func__, addr, BusErrFlag);
 
 	BusErrFlag = 1;
 	BusErrAdr = addr;
@@ -595,7 +595,7 @@ AdrError(DWORD adr, DWORD unknown)
 
 	(void)adr;
 	(void)unknown;
-	printf("AdrError: %x\n", adr);
+	p6logd("AdrError: %x\n", adr);
 	//	assert(0);
 }
 
@@ -606,7 +606,7 @@ BusError(DWORD adr, DWORD unknown)
 	(void)adr;
 	(void)unknown;
 
-	printf("BusError: %x\n", adr);
+	p6logd("BusError: %x\n", adr);
 	BusErrHandling = 1;
 	//assert(0);
 }

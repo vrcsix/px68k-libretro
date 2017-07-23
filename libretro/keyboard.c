@@ -479,9 +479,9 @@ Keyboard_KeyDown(DWORD wp)
 		return;
 	}
 
-	printf("Keyboard_KeyDown: ");
-	printf("wp=0x%x, code=0x%x\n", wp, code);
-//	printf("RETROK_UP: 0x%x", RETROK_UP);
+	p6logd("Keyboard_KeyDown: ");
+	p6logd("wp=0x%x, code=0x%x\n", wp, code);
+//	p6logd("RETROK_UP: 0x%x", RETROK_UP);
 
 #if 0
 	if (code != NC) {
@@ -489,14 +489,14 @@ Keyboard_KeyDown(DWORD wp)
 		if (newwp != KeyBufRP) {
 			KeyBuf[KeyBufWP] = code;
 			KeyBufWP = newwp;
-			printf("KeyBufWP: %d\n", KeyBufWP);
+			p6logd("KeyBufWP: %d\n", KeyBufWP);
 		}
 	}
 #else
 	send_keycode(code, P6K_DOWN);
 #endif
 //return;
-	printf("JoyKeyState: 0x%x\n", JoyKeyState);
+	p6logd("JoyKeyState: 0x%x\n", JoyKeyState);
 
 	switch (wp) {
 	case RETROK_UP:
@@ -580,7 +580,7 @@ Keyboard_KeyUp(DWORD wp)
 	send_keycode(code, P6K_UP);
 #endif
 //return;
-	printf("JoyKeyState: 0x%x\n", JoyKeyState);
+	p6logd("JoyKeyState: 0x%x\n", JoyKeyState);
 
 	switch(wp) {
 	case RETROK_UP:
@@ -633,7 +633,7 @@ void
 Keyboard_Int(void)
 {
 	if (KeyBufRP != KeyBufWP) {
-		printf("KeyBufRP:%d, KeyBufWP:%d\n", KeyBufRP, KeyBufWP);
+		p6logd("KeyBufRP:%d, KeyBufWP:%d\n", KeyBufRP, KeyBufWP);
 		if (!KeyIntFlag) {
 			LastKey = KeyBuf[KeyBufRP];
 			KeyBufRP = ((KeyBufRP+1)&(KeyBufSize-1));

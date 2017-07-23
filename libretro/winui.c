@@ -451,7 +451,7 @@ static void menu_create_flist(int v)
 		strcpy(mfl.name[i], n);
 		// set 1 if this is directory
 		mfl.type[i] = S_ISDIR(buf.st_mode)? 1 : 0;
-		printf("%s 0x%x\n", n, buf.st_mode);
+		p6logd("%s 0x%x\n", n, buf.st_mode);
 	}
 
 	closedir(dp);
@@ -643,7 +643,7 @@ int WinUI_Menu(int first)
 				}
 			} else if (mfl.y + 1 < mfl.num) {
 				mfl.y++;
-				printf("mfl.y %d\n", mfl.y);
+				p6logd("mfl.y %d\n", mfl.y);
 			}
 			mfile_redraw = 1;
 			break;
@@ -671,11 +671,11 @@ int WinUI_Menu(int first)
 			menu_redraw = 1;
 
 			drv = WinUI_get_drv_num(mkey_y);
-			printf("**** drv:%d *****\n", drv);
+			p6logd("**** drv:%d *****\n", drv);
 			if (drv >= 0) {
 				if (mval_y[mkey_y] == 0) {
 					// go file_mode
-					printf("hoge:%d", mval_y[mkey_y]);
+					p6logd("hoge:%d\n", mval_y[mkey_y]);
 					menu_state = ms_file;
 					menu_redraw = 0; //reset
 					mfile_redraw = 1;
@@ -692,7 +692,7 @@ int WinUI_Menu(int first)
 			break;
 		case ms_file:
 			drv = WinUI_get_drv_num(mkey_y);
-			printf("***** drv:%d *****\n", drv);
+			p6logd("***** drv:%d *****\n", drv);
 			if (drv < 0) {
 				break; 
 			}

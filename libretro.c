@@ -66,6 +66,7 @@ static  retro_input_poll_t input_poll_cb;
 retro_input_state_t input_state_cb;
 retro_audio_sample_t audio_cb;
 retro_audio_sample_batch_t audio_batch_cb;
+retro_log_printf_t log_cb;
 
 void retro_set_video_refresh(retro_video_refresh_t cb) { video_cb = cb; }
 void retro_set_audio_sample(retro_audio_sample_t cb) { audio_cb  =cb; }
@@ -342,13 +343,13 @@ static void update_variables(void)
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
-      fprintf(stderr, "value: %s\n", var.value);
+      //fprintf(stderr, "value: %s\n", var.value);
       if (!strcmp(var.value, "OFF"))
          opt_analog = false;
       if (!strcmp(var.value, "ON"))
          opt_analog = true;
 
-      fprintf(stderr, "[libretro-test]: Analog: %s.\n",opt_analog?"ON":"OFF");
+      //fprintf(stderr, "[libretro-test]: Analog: %s.\n",opt_analog?"ON":"OFF");
    }
 
    var.key = "px68k_joytype1";
@@ -508,7 +509,7 @@ bool retro_load_game(const struct retro_game_info *info)
 
    strcpy(RPATH,full_path);
 
-   printf("LOAD EMU\n");
+   p6logd("LOAD EMU\n");
 
    return true;
 }
@@ -548,7 +549,13 @@ size_t retro_get_memory_size(unsigned id)
 
 void retro_init(void)
 {
+   struct retro_log_callback log;
    const char *system_dir = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log))
+      log_cb = log.log;
+   else
+      log_cb = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &system_dir) && system_dir)
    {
@@ -642,7 +649,7 @@ void retro_init(void)
 void retro_deinit(void)
 {
    end_loop_retro();
-   printf("Retro DeInit\n");
+   p6logd("Retro DeInit\n");
 }
 
 void retro_reset(void)
@@ -657,25 +664,25 @@ void retro_run(void)
    if(firstcall)
    {
       pre_main(RPATH);
-      update_variables();
       firstcall=0;
-      printf("INIT done\n");
+      p6logd("INIT done\n");
+      update_variables();
       return;
    }
 
    if (CHANGEAV_TIMING == 1)
    {
       update_timing();
-      printf("w:%d h:%d a:%.3f\n",retrow,retroh,(float)(4/3));
-      printf("fps:%.2f soundrate:%d\n", FRAMERATE, (int)SOUNDRATE);
+      p6logd("w:%d h:%d a:%.3f\n",retrow,retroh,(float)(4/3));
+      p6logd("fps:%.2f soundrate:%d\n", FRAMERATE, (int)SOUNDRATE);
       CHANGEAV_TIMING=0;
    }
 
    if (CHANGEAV == 1)
    {
       update_geometry();
-      printf("w:%d h:%d a:%.3f\n",retrow,retroh,(float)(4/3));
-      printf("fps:%.2f soundrate:%d\n", FRAMERATE, (int)SOUNDRATE);
+      p6logd("w:%d h:%d a:%.3f\n",retrow,retroh,(float)(4/3));
+      p6logd("fps:%.2f soundrate:%d\n", FRAMERATE, (int)SOUNDRATE);
       CHANGEAV=0;
    }
 

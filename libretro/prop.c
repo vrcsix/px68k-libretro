@@ -143,7 +143,7 @@ set_modulepath(char *path, size_t len)
 	char *homepath;
 
 #ifdef __LIBRETRO__
-        puts("Libretro...");
+        p6logd("Libretro...\n");
         strcpy(path,retro_system_conf);
         sprintf(winx68k_ini, "%s%cconfig",retro_system_conf,slash);
         return 0;

@@ -202,7 +202,7 @@ int WinDraw_Init(void)
 	WinDraw_Pal16G = 0x07e0;
 	WinDraw_Pal16B = 0x001f;
 
-	printf("R: %x, G: %x, B: %x\n", WinDraw_Pal16R, WinDraw_Pal16G, WinDraw_Pal16B);
+	p6logd("R: %x, G: %x, B: %x\n", WinDraw_Pal16R, WinDraw_Pal16G, WinDraw_Pal16B);
 
 	ScrBuf = malloc(800 * 600 * 2);
 
@@ -488,7 +488,7 @@ void WinDraw_DrawLine(void)
 	int opaq, ton=0, gon=0, bgon=0, tron=0, pron=0, tdrawed=0;
 
 if(VLINE==-1){
-	printf("%d %d\n",VLINE,VLINE);
+	p6logd("%d %d\n",VLINE,VLINE);
 	return;
 }
 	if (!TextDirtyLine[VLINE]) return;

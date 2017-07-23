@@ -10,6 +10,9 @@
 #endif
 #endif
 
+#include "libretro.h"
+extern retro_log_printf_t log_cb;
+
 //#include	"sstp.h"
 
 //extern HWND hWndMain;
@@ -47,7 +50,7 @@ void p6logd(const char *fmt, ...)
 	printf("%s", p6l_buf);
 #endif
 #else
-   /* TODO/FIXME */
-   /* Instead of platform-specific stuff, we should use log_cb calls here */
+   if (log_cb)
+      log_cb(RETRO_LOG_INFO, "%s", p6l_buf);
 #endif
 }
