@@ -66,6 +66,7 @@ static  retro_input_poll_t input_poll_cb;
 retro_input_state_t input_state_cb;
 retro_audio_sample_t audio_cb;
 retro_audio_sample_batch_t audio_batch_cb;
+retro_log_printf_t log_cb;
 
 void retro_set_video_refresh(retro_video_refresh_t cb) { video_cb = cb; }
 void retro_set_audio_sample(retro_audio_sample_t cb) { audio_cb  =cb; }
@@ -548,7 +549,13 @@ size_t retro_get_memory_size(unsigned id)
 
 void retro_init(void)
 {
+   struct retro_log_callback log;
    const char *system_dir = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log))
+      log_cb = log.log;
+   else
+      log_cb = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &system_dir) && system_dir)
    {
