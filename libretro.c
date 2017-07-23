@@ -343,13 +343,13 @@ static void update_variables(void)
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
-      fprintf(stderr, "value: %s\n", var.value);
+      //fprintf(stderr, "value: %s\n", var.value);
       if (!strcmp(var.value, "OFF"))
          opt_analog = false;
       if (!strcmp(var.value, "ON"))
          opt_analog = true;
 
-      fprintf(stderr, "[libretro-test]: Analog: %s.\n",opt_analog?"ON":"OFF");
+      //fprintf(stderr, "[libretro-test]: Analog: %s.\n",opt_analog?"ON":"OFF");
    }
 
    var.key = "px68k_joytype1";
@@ -509,7 +509,7 @@ bool retro_load_game(const struct retro_game_info *info)
 
    strcpy(RPATH,full_path);
 
-   printf("LOAD EMU\n");
+   p6logd("LOAD EMU\n");
 
    return true;
 }
@@ -649,7 +649,7 @@ void retro_init(void)
 void retro_deinit(void)
 {
    end_loop_retro();
-   printf("Retro DeInit\n");
+   p6logd("Retro DeInit\n");
 }
 
 void retro_reset(void)
@@ -664,25 +664,25 @@ void retro_run(void)
    if(firstcall)
    {
       pre_main(RPATH);
-      update_variables();
       firstcall=0;
-      printf("INIT done\n");
+      p6logd("INIT done\n");
+      update_variables();
       return;
    }
 
    if (CHANGEAV_TIMING == 1)
    {
       update_timing();
-      printf("w:%d h:%d a:%.3f\n",retrow,retroh,(float)(4/3));
-      printf("fps:%.2f soundrate:%d\n", FRAMERATE, (int)SOUNDRATE);
+      p6logd("w:%d h:%d a:%.3f\n",retrow,retroh,(float)(4/3));
+      p6logd("fps:%.2f soundrate:%d\n", FRAMERATE, (int)SOUNDRATE);
       CHANGEAV_TIMING=0;
    }
 
    if (CHANGEAV == 1)
    {
       update_geometry();
-      printf("w:%d h:%d a:%.3f\n",retrow,retroh,(float)(4/3));
-      printf("fps:%.2f soundrate:%d\n", FRAMERATE, (int)SOUNDRATE);
+      p6logd("w:%d h:%d a:%.3f\n",retrow,retroh,(float)(4/3));
+      p6logd("fps:%.2f soundrate:%d\n", FRAMERATE, (int)SOUNDRATE);
       CHANGEAV=0;
    }
 
