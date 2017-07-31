@@ -7,7 +7,7 @@
 #include	"prop.h"
 #include	"winx68k.h"
 #include	"sysport.h"
-#include	"memory.h"
+#include	"x68kmemory.h"
 #include	"sram.h"
 
 	BYTE	SRAM[0x4000];
