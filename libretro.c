@@ -660,6 +660,8 @@ static int firstcall=1;
 
 void retro_run(void)
 {
+   bool updated = false;
+
    if(firstcall)
    {
       pre_main(RPATH);
@@ -669,23 +671,21 @@ void retro_run(void)
       return;
    }
 
-   if (CHANGEAV_TIMING == 1)
+   if ((CHANGEAV == 1) || (CHANGEAV_TIMING == 1))
    {
-      update_timing();
+      if (CHANGEAV == 1)
+      {
+         update_geometry();
+         CHANGEAV=0;
+      }
+      if (CHANGEAV_TIMING == 1)
+      {
+         update_timing();
+         CHANGEAV_TIMING=0;
+      }
       p6logd("w:%d h:%d a:%.3f\n",retrow,retroh,(float)(4.0/3.0));
       p6logd("fps:%.2f soundrate:%d\n", FRAMERATE, (int)SOUNDRATE);
-      CHANGEAV_TIMING=0;
    }
-
-   if (CHANGEAV == 1)
-   {
-      update_geometry();
-      p6logd("w:%d h:%d a:%.3f\n",retrow,retroh,(float)(4.0/3.0));
-      p6logd("fps:%.2f soundrate:%d\n", FRAMERATE, (int)SOUNDRATE);
-      CHANGEAV=0;
-   }
-
-   bool updated = false;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
    {
