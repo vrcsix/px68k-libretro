@@ -18,8 +18,8 @@ char slash = '\\';
 char slash = '/';
 #endif
 
-#define Mode1 55.45 /* 31.50 kHz - commonly used  */
-#define Mode0 59.94 /* 15.98 kHz - actual value should be ~61.46 fps. this is lowered to
+#define MODE_HIGH 55.45 /* 31.50 kHz - commonly used  */
+#define MODE_NORM 59.94 /* 15.98 kHz - actual value should be ~61.46 fps. this is lowered to
                      * reduced the chances of audio stutters due to mismatch
                      * fps when vsync is used since most monitors are only capable
                      * of upto 60Hz refresh rate. */
@@ -27,9 +27,6 @@ char slash = '/';
 #define SOUNDRATE 44100.0
 #define SNDSZ round(SOUNDRATE / FRAMERATE)
 
-
-int vidmode = 1;
-float FRAMERATE = Mode1;
 char RPATH[512];
 char RETRO_DIR[512];
 const char *retro_save_directory;
@@ -46,6 +43,8 @@ int retrow=800;
 int retroh=600;
 int CHANGEAV=0;
 int CHANGEAV_TIMING=0; /* Separate change of geometry from change of refresh rate */
+int VID_MODE=1;
+float FRAMERATE=MODE_HIGH;
 int JOY1_TYPE;
 int JOY2_TYPE;
 int clockmhz = 10;
@@ -462,7 +461,7 @@ void update_timing(void)
 {
    struct retro_system_av_info system_av_info;
    /* retro_get_system_av_info(&system_av_info); */
-   FRAMERATE = (vidmode ? Mode1 : Mode0);
+   FRAMERATE = (VID_MODE ? MODE_HIGH : MODE_NORM);
    /* Updating system_av_info.timing.fps seems enough for a fps update */
    /* unless this is a bug? Since it works, lets just to it this way atm. */
    system_av_info.timing.fps = FRAMERATE;
