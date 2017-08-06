@@ -728,6 +728,7 @@ extern "C" void handle_retrok(){
 #endif
 
 	if(Core_Key_Sate[RETROK_F12] && Core_Key_Sate[RETROK_F12]!=Core_old_Key_Sate[RETROK_F12]  )
+	{
 		if (menu_mode == menu_out) {
 			oldrw=retrow;oldrh=retroh;
 			retroh=600;retrow=800;
@@ -740,6 +741,7 @@ extern "C" void handle_retrok(){
 			DSound_Play();
 			menu_mode = menu_out;
 		}
+	}
 
 #ifdef WIN68DEBUG
 	if(Core_Key_Sate[RETROK_F11] && Core_Key_Sate[RETROK_F11]!=Core_old_Key_Sate[RETROK_F11]  )
