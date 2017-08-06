@@ -692,6 +692,8 @@ extern "C" int pmain(int argc, char *argv[])
 	FDD_SetFD(0, Config.FDDImage[0], 0);
 	FDD_SetFD(1, Config.FDDImage[1], 0);
 
+	return 1;
+
 }
 
 #define KEYP(a,b) {\
