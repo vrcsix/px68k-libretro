@@ -692,6 +692,8 @@ extern "C" int pmain(int argc, char *argv[])
 	FDD_SetFD(0, Config.FDDImage[0], 0);
 	FDD_SetFD(1, Config.FDDImage[1], 0);
 
+	return 1;
+
 }
 
 #define KEYP(a,b) {\
@@ -726,6 +728,7 @@ extern "C" void handle_retrok(){
 #endif
 
 	if(Core_Key_Sate[RETROK_F12] && Core_Key_Sate[RETROK_F12]!=Core_old_Key_Sate[RETROK_F12]  )
+	{
 		if (menu_mode == menu_out) {
 			oldrw=retrow;oldrh=retroh;
 			retroh=600;retrow=800;
@@ -738,6 +741,7 @@ extern "C" void handle_retrok(){
 			DSound_Play();
 			menu_mode = menu_out;
 		}
+	}
 
 #ifdef WIN68DEBUG
 	if(Core_Key_Sate[RETROK_F11] && Core_Key_Sate[RETROK_F11]!=Core_old_Key_Sate[RETROK_F11]  )
