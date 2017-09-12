@@ -36,6 +36,8 @@ BYTE MouseUpState0;
 
 BYTE JoyPortData[2];
 
+extern bool joypad1, joypad2;
+
 int *r_joy;
 
 void Joystick_Init(void)
@@ -94,7 +96,7 @@ void FASTCALL Joystick_Update(int is_menu, int key, int port)
 	BYTE mret0 = 0xff, mret1 = 0xff;
 	static BYTE pre_ret0 = 0xff, pre_mret0 = 0xff;
 
-	if ( port == 0){
+	if ( port == 0 && joypad1){
 		switch (JOY1_TYPE) {
 		case 2: //8-buttons CPSF-SFC
 			if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT))ret0 ^= JOY_RIGHT;
@@ -140,7 +142,7 @@ void FASTCALL Joystick_Update(int is_menu, int key, int port)
 			//if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R) )ret0 ^= JOY_TRG2;
 			break;
 		}
-	} else {
+	} else if (port == 1 && joypad2) {
 		switch (JOY2_TYPE) {
 		case 2: //8-buttons CPSF-SFC
 			if (input_state_cb(1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT))ret0 ^= JOY_RIGHT;
