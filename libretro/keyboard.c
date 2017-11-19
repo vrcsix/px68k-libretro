@@ -345,9 +345,13 @@ void send_keycode(BYTE code, int flag)
 		newwp = ((KeyBufWP + 1) & (KeyBufSize - 1));
 		if (newwp != KeyBufRP) {
 			KeyBuf[KeyBufWP] = code | ((flag == P6K_UP)? 0x80 : 0);
+#ifdef DEBUG
 			p6logd("KeyBuf: %x\n", KeyBuf[KeyBufWP]);
+#endif
 			KeyBufWP = newwp;
+#ifdef DEBUG
 			p6logd("KeyBufWP: %d\n", KeyBufWP);
+#endif
 		}
 	}
 }
@@ -633,7 +637,9 @@ void
 Keyboard_Int(void)
 {
 	if (KeyBufRP != KeyBufWP) {
+#ifdef DEBUG
 		p6logd("KeyBufRP:%d, KeyBufWP:%d\n", KeyBufRP, KeyBufWP);
+#endif
 		if (!KeyIntFlag) {
 			LastKey = KeyBuf[KeyBufRP];
 			KeyBufRP = ((KeyBufRP+1)&(KeyBufSize-1));

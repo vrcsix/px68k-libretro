@@ -574,7 +574,7 @@ void update_geometry(void)
    struct retro_system_av_info system_av_info;
    system_av_info.geometry.base_width = retrow;
    system_av_info.geometry.base_height = retroh;
-   system_av_info.geometry.aspect_ratio = (float)4/3;// retro_aspect;
+   system_av_info.geometry.aspect_ratio = (float)4.0/3.0;// retro_aspect;
    environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &system_av_info);
 }
 

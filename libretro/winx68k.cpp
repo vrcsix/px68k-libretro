@@ -278,6 +278,9 @@ WinX68k_Reset(void)
 	//CDROM_Init();
 	DSound_Play();
 
+	// add retro log
+	p6logd("Restarting PX68K...\n");
+
 	return TRUE;
 }
 
