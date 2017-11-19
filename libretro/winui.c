@@ -643,7 +643,9 @@ int WinUI_Menu(int first)
 				}
 			} else if (mfl.y + 1 < mfl.num) {
 				mfl.y++;
+#ifdef DEBUG
 				p6logd("mfl.y %d\n", mfl.y);
+#endif
 			}
 			mfile_redraw = 1;
 			break;
@@ -682,6 +684,14 @@ int WinUI_Menu(int first)
 				} else { // mval_y[mkey_y] == 1
 					// FDD_EjectFD() is done, so set 0.
 					mval_y[mkey_y] = 0;
+					// 11-19-17 added for libretro logging
+					switch (drv)
+					{
+						case 0: p6logd("fdd0 ejected...\n", drv); break;
+						case 1: p6logd("fdd1 ejected...\n", drv); break;
+						case 2: p6logd("hdd0 ejected...\n", drv); break;
+						case 3: p6logd("hdd1 ejected...\n", drv); break;
+					}
 				}
 			} else if (!strcmp("SYSTEM", menu_item_key[mkey_y])) {
 				if (mval_y[mkey_y] == 2) {
@@ -697,7 +707,8 @@ int WinUI_Menu(int first)
 				break; 
 			}
 			y = mfl.ptr + mfl.y;
-			p6logd("file slect %s\n", mfl.name[y]);
+			// file loaded
+			// p6logd("file selected: %s\n", mfl.name[y]);
 			if (mfl.type[y]) {
 				// directory operation
 				if (!strcmp(mfl.name[y], "..")) {
@@ -710,10 +721,12 @@ int WinUI_Menu(int first)
 					strcat(mfl.dir[drv], "/");
 #endif
 				}
+				p6logd("directory selected: %s\n", mfl.name[y]);
 				menu_func[mkey_y].func(0);
 				mfile_redraw = 1;
 			} else {
 				// file operation
+				p6logd("file selected: %s\n", mfl.name[y]);
 				if (strlen(mfl.name[y]) != 0) {
 					char tmpstr[MAX_PATH];
 					strcpy(tmpstr, mfl.dir[drv]);
