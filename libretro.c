@@ -11,6 +11,7 @@
 #include "libretro/prop.h"
 #include "fmgen/fmg_wrap.h"
 #include "x68k/adpcm.h"
+#include "x68k/fdd.h"
 
 #ifdef _WIN32
 char slash = '\\';
@@ -66,9 +67,75 @@ static  retro_input_poll_t input_poll_cb;
 
 static char base_dir[MAX_PATH];
 
+/* .dsk swap support */
+struct retro_disk_control_callback dskcb;
+unsigned disk_index = 0;
 unsigned disk_images = 0;
 char disk_paths[10][MAX_PATH];
 bool disk_inserted = false;
+
+bool set_eject_state(bool ejected)
+{
+   disk_inserted = !ejected;
+   return true;
+}
+
+bool get_eject_state(void)
+{
+   return !disk_inserted;
+}
+
+unsigned get_image_index(void)
+{
+   return disk_index;
+}
+
+bool set_image_index(unsigned index)
+{
+   disk_index = index;
+   if(disk_index == disk_images)
+   {
+      //retroarch is trying to set "no disk in tray"
+      return true;
+   }
+
+   FDD_SetFD(0, disk_paths[disk_index], 0);
+   return true;
+}
+
+unsigned get_num_images(void)
+{
+   return disk_images;
+}
+
+bool add_image_index(void)
+{
+   if (disk_images >= 10)
+      return false;
+   
+   disk_images++;
+   return true;
+}
+
+bool replace_image_index(unsigned index, const struct retro_game_info *info)
+{
+   strcpy(disk_paths[index], info->path);
+   return true;
+}
+
+void attach_disk_swap_interface(void)
+{
+   dskcb.set_eject_state = set_eject_state;
+   dskcb.get_eject_state = get_eject_state;
+   dskcb.set_image_index = set_image_index;
+   dskcb.get_image_index = get_image_index;
+   dskcb.get_num_images  = get_num_images;
+   dskcb.add_image_index = add_image_index;
+   dskcb.replace_image_index = replace_image_index;
+
+   environ_cb(RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE, &dskcb);
+}
+/* end .dsk swap support */
 
 retro_input_state_t input_state_cb;
 retro_audio_sample_t audio_cb;
@@ -222,6 +289,7 @@ int pre_main(const char *argv)
             sprintf((char*)argv, "%s \"%s\"", argv, disk_paths[1]);
          }
          disk_inserted = true;
+         attach_disk_swap_interface();
       }
    }
 
@@ -793,6 +861,7 @@ void retro_init(void)
       exit(0);
    }
 
+   attach_disk_swap_interface();
 /*
     struct retro_keyboard_callback cbk = { keyboard_cb };
     environ_cb(RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK, &cbk);
