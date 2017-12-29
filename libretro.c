@@ -64,6 +64,8 @@ static retro_environment_t environ_cb;
 
 static  retro_input_poll_t input_poll_cb;
 
+static char base_dir[MAX_PATH];
+
 retro_input_state_t input_state_cb;
 retro_audio_sample_t audio_cb;
 retro_audio_sample_batch_t audio_batch_cb;
@@ -120,6 +122,23 @@ int PARAMCOUNT=0;
 extern int cmain(int argc, char *argv[]);
 
 void parse_cmdline( const char *argv );
+
+static void extract_directory(char *buf, const char *path, size_t size)
+{
+   char *base = NULL;
+
+   strncpy(buf, path, size - 1);
+   buf[size - 1] = '\0';
+
+   base = strrchr(buf, '/');
+   if (!base)
+      base = strrchr(buf, '\\');
+
+   if (base)
+      *base = '\0';
+   else
+      buf[0] = '\0';
+}
 
 void Add_Option(const char* option)
 {
@@ -622,6 +641,8 @@ bool retro_load_game(const struct retro_game_info *info)
    full_path = info->path;
 
    strcpy(RPATH,full_path);
+
+   extract_directory(base_dir, info->path, sizeof(base_dir));
 
    p6logd("LOAD EMU\n");
 
