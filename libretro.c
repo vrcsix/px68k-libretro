@@ -66,6 +66,10 @@ static  retro_input_poll_t input_poll_cb;
 
 static char base_dir[MAX_PATH];
 
+unsigned disk_images = 0;
+char disk_paths[10][MAX_PATH];
+bool disk_inserted = false;
+
 retro_input_state_t input_state_cb;
 retro_audio_sample_t audio_cb;
 retro_audio_sample_batch_t audio_batch_cb;
@@ -140,6 +144,47 @@ static void extract_directory(char *buf, const char *path, size_t size)
       buf[0] = '\0';
 }
 
+static bool read_m3u(const char *file)
+{
+   char line[MAX_PATH];
+   char name[MAX_PATH];
+   FILE *f = fopen(file, "r");
+
+   if (!f)
+      return false;
+
+   while (fgets(line, sizeof(line), f) && disk_images < sizeof(disk_paths) / sizeof(disk_paths[0])) 
+   {
+      if (line[0] == '#')
+         continue;
+      
+      char *carriage_return = strchr(line, '\r');
+      if (carriage_return)
+         *carriage_return = '\0';
+      
+      char *newline = strchr(line, '\n');
+      if (newline)
+         *newline = '\0';
+
+      // Remove any beginning and ending quotes as these can cause issues when feeding the paths into command line later
+      if (line[0] == '"')
+          memmove(line, line+1, strlen(line));
+
+      if (line[strlen(line) - 1] == '"')
+          line[strlen(line) - 1]  = '\0';
+
+      if (line[0] != '\0')
+      {
+         snprintf(name, sizeof(name), "%s%c%s", base_dir, slash, line);
+         strcpy(disk_paths[disk_images], name);
+         disk_images++;
+      }
+   }
+
+   fclose(f);
+   return (disk_images != 0);
+}
+
 void Add_Option(const char* option)
 {
    static int first=0;
@@ -162,6 +207,22 @@ int pre_main(const char *argv)
    {
       if( HandleExtension((char*)argv,"cmd") || HandleExtension((char*)argv,"CMD"))
          i=loadcmdfile((char*)argv);
+      else if(HandleExtension((char*)argv,"m3u") || HandleExtension((char*)argv,"M3U"))
+      {
+         if (!read_m3u((char*)argv))
+         {
+            if (log_cb)
+               log_cb(RETRO_LOG_ERROR, "%s\n", "[libretro]: failed to read m3u file ...");
+            return false;
+         }
+
+         sprintf((char*)argv, "px68k \"%s\"", disk_paths[0]);
+         if(disk_images > 1)
+         {
+            sprintf((char*)argv, "%s \"%s\"", argv, disk_paths[1]);
+         }
+         disk_inserted = true;
+      }
    }
 
    if(i==1)
@@ -574,7 +635,7 @@ void retro_get_system_info(struct retro_system_info *info)
    info->library_name = "PX68K";
    info->library_version = PX68K_VERSION GIT_VERSION;
    info->need_fullpath = true;
-   info->valid_extensions = "dim|zip|img|d88|88d|hdm|dup|2hd|xdf|hdf|cmd";
+   info->valid_extensions = "dim|zip|img|d88|88d|hdm|dup|2hd|xdf|hdf|cmd|m3u";
 }
 
 
