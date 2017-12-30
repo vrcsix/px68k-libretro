@@ -113,7 +113,7 @@ bool add_image_index(void)
 {
    if (disk_images >= 10)
       return false;
-   
+
    disk_images++;
    return true;
 }
@@ -221,15 +221,15 @@ static bool read_m3u(const char *file)
    if (!f)
       return false;
 
-   while (fgets(line, sizeof(line), f) && disk_images < sizeof(disk_paths) / sizeof(disk_paths[0])) 
+   while (fgets(line, sizeof(line), f) && disk_images < sizeof(disk_paths) / sizeof(disk_paths[0]))
    {
       if (line[0] == '#')
          continue;
-      
+
       char *carriage_return = strchr(line, '\r');
       if (carriage_return)
          *carriage_return = '\0';
-      
+
       char *newline = strchr(line, '\n');
       if (newline)
          *newline = '\0';
@@ -487,7 +487,7 @@ void retro_set_controller_descriptors()
 }
 
 void retro_set_controller_port_device(unsigned port, unsigned device)
-{ 
+{
    switch (device)
    {
       case RETRO_DEVICE_JOYPAD:
