@@ -42,21 +42,21 @@ bool joypad1, joypad2;
 
 bool opt_analog;
 
-int retrow=800;
-int retroh=600;
-int CHANGEAV=0;
-int CHANGEAV_TIMING=0; /* Separate change of geometry from change of refresh rate */
-int VID_MODE=1;
-float FRAMERATE=MODE_HIGH;
+int retrow = 800;
+int retroh = 600;
+int CHANGEAV = 0;
+int CHANGEAV_TIMING = 0; /* Separate change of geometry from change of refresh rate */
+int VID_MODE = 1;
+float FRAMERATE = MODE_HIGH;
 int JOY1_TYPE;
 int JOY2_TYPE;
 int clockmhz = 10;
 DWORD ram_size;
 int pcm_vol, opm_vol;
 
-int pauseg=0;
+int pauseg = 0;
 
-signed short soundbuf[1024*2];
+signed short soundbuf[1024 * 2];
 
 uint16_t *videoBuffer;
 
@@ -144,7 +144,7 @@ retro_audio_sample_batch_t audio_batch_cb;
 retro_log_printf_t log_cb;
 
 void retro_set_video_refresh(retro_video_refresh_t cb) { video_cb = cb; }
-void retro_set_audio_sample(retro_audio_sample_t cb) { audio_cb  =cb; }
+void retro_set_audio_sample(retro_audio_sample_t cb) { audio_cb = cb; }
 void retro_set_audio_sample_batch(retro_audio_sample_batch_t cb) { audio_batch_cb = cb; }
 void retro_set_input_poll(retro_input_poll_t cb) { input_poll_cb = cb; }
 void retro_set_input_state(retro_input_state_t cb) { input_state_cb = cb; }
@@ -153,29 +153,29 @@ static char CMDFILE[512];
 
 int loadcmdfile(char *argv)
 {
-   int res=0;
+   int res = 0;
 
-   FILE *fp = fopen(argv,"r");
+   FILE *fp = fopen(argv, "r");
 
-   if( fp != NULL )
+   if (fp != NULL)
    {
-      if ( fgets (CMDFILE , 512 , fp) != NULL )
-         res=1;
-      fclose (fp);
+      if (fgets(CMDFILE, 512, fp) != NULL)
+         res = 1;
+      fclose(fp);
    }
 
    return res;
 }
 
-int HandleExtension(char *path,char *ext)
+int HandleExtension(char *path, char *ext)
 {
    int len = strlen(path);
 
    if (len >= 4 &&
-         path[len-4] == '.' &&
-         path[len-3] == ext[0] &&
-         path[len-2] == ext[1] &&
-         path[len-1] == ext[2])
+         path[len - 4] == '.' &&
+         path[len - 3] == ext[0] &&
+         path[len - 2] == ext[1] &&
+         path[len - 1] == ext[2])
    {
       return 1;
    }
@@ -184,16 +184,16 @@ int HandleExtension(char *path,char *ext)
 }
 //Args for experimental_cmdline
 static char ARGUV[64][1024];
-static unsigned char ARGUC=0;
+static unsigned char ARGUC = 0;
 
 // Args for Core
 static char XARGV[64][1024];
 static const char* xargv_cmd[64];
-int PARAMCOUNT=0;
+int PARAMCOUNT = 0;
 
 extern int cmain(int argc, char *argv[]);
 
-void parse_cmdline( const char *argv );
+void parse_cmdline(const char *argv);
 
 static void extract_directory(char *buf, const char *path, size_t size)
 {
@@ -236,7 +236,7 @@ static bool read_m3u(const char *file)
 
       // Remove any beginning and ending quotes as these can cause issues when feeding the paths into command line later
       if (line[0] == '"')
-          memmove(line, line+1, strlen(line));
+          memmove(line, line + 1, strlen(line));
 
       if (line[strlen(line) - 1] == '"')
           line[strlen(line) - 1]  = '\0';
@@ -255,27 +255,27 @@ static bool read_m3u(const char *file)
 
 void Add_Option(const char* option)
 {
-   static int first=0;
+   static int first = 0;
 
-   if(first==0)
+   if(first == 0)
    {
-      PARAMCOUNT=0;
+      PARAMCOUNT = 0;
       first++;
    }
 
-   sprintf(XARGV[PARAMCOUNT++],"%s\0",option);
+   sprintf(XARGV[PARAMCOUNT++], "%s\0", option);
 }
 
 int pre_main(const char *argv)
 {
-   int i=0;
+   int i = 0;
    int Only1Arg;
 
    if (strlen(argv) > strlen("cmd"))
    {
-      if( HandleExtension((char*)argv,"cmd") || HandleExtension((char*)argv,"CMD"))
-         i=loadcmdfile((char*)argv);
-      else if(HandleExtension((char*)argv,"m3u") || HandleExtension((char*)argv,"M3U"))
+      if (HandleExtension((char*)argv, "cmd") || HandleExtension((char*)argv, "CMD"))
+         i = loadcmdfile((char*)argv);
+      else if (HandleExtension((char*)argv, "m3u") || HandleExtension((char*)argv, "M3U"))
       {
          if (!read_m3u((char*)argv))
          {
@@ -294,31 +294,32 @@ int pre_main(const char *argv)
       }
    }
 
-   if(i==1)
+   if (i == 1)
       parse_cmdline(CMDFILE);
    else
       parse_cmdline(argv);
 
-   Only1Arg = (strcmp(ARGUV[0],"px68k") == 0) ? 0 : 1;
+   Only1Arg = (strcmp(ARGUV[0], "px68k") == 0) ? 0 : 1;
 
-   for (i = 0; i<64; i++)
+   for (i = 0; i < 64; i++)
       xargv_cmd[i] = NULL;
 
-
-   if(Only1Arg)
+   if (Only1Arg)
    {
-      int cfgload=0;
+      int cfgload = 0;
 
       Add_Option("px68k");
 
-      if (strlen(RPATH) >= strlen("hdf")){
-         if(!strcasecmp(&RPATH[strlen(RPATH)-strlen("hdf")], "hdf")){
+      if (strlen(RPATH) >= strlen("hdf")) 
+      {
+         if (!strcasecmp(&RPATH[strlen(RPATH) - strlen("hdf")], "hdf"))
+         {
             Add_Option("-h");
-            cfgload=1;
+            cfgload = 1;
          }
       }
 
-      if(cfgload==0)
+      if (cfgload == 0)
       {
          //Add_Option("-verbose");
          //Add_Option(retro_system_tos);
@@ -329,7 +330,7 @@ int pre_main(const char *argv)
    }
    else
    { // Pass all cmdline args
-      for(i = 0; i < ARGUC; i++)
+      for (i = 0; i < ARGUC; i++)
          Add_Option(ARGUV[i]);
    }
 
@@ -338,7 +339,7 @@ int pre_main(const char *argv)
       xargv_cmd[i] = (char*)(XARGV[i]);
    }
 
-   pmain(PARAMCOUNT,( char **)xargv_cmd);
+   pmain(PARAMCOUNT, (char **)xargv_cmd);
 
    xargv_cmd[PARAMCOUNT - 2] = NULL;
 
@@ -347,13 +348,13 @@ int pre_main(const char *argv)
 
 void parse_cmdline(const char *argv)
 {
-   char *p,*p2,*start_of_word;
-   int c,c2;
-   static char buffer[512*4];
+   char *p, *p2, *start_of_word;
+   int c, c2;
+   static char buffer[512 * 4];
    enum states { DULL, IN_WORD, IN_STRING } state = DULL;
 
-   strcpy(buffer,argv);
-   strcat(buffer," \0");
+   strcpy(buffer, argv);
+   strcat(buffer, " \0");
 
    for (p = buffer; *p != '\0'; p++)
    {
@@ -379,7 +380,7 @@ void parse_cmdline(const char *argv)
             {
                /* word goes from start_of_word to p-1 */
                //... do something with the word ...
-               for (c2 = 0,p2 = start_of_word; p2 < p; p2++, c2++)
+               for (c2 = 0, p2 = start_of_word; p2 < p; p2++, c2++)
                   ARGUV[ARGUC][c2] = (unsigned char) *p2;
                ARGUC++;
 
@@ -392,7 +393,7 @@ void parse_cmdline(const char *argv)
             {
                /* word goes from start_of_word to p-1 */
                //... do something with the word ...
-               for (c2 = 0,p2 = start_of_word; p2 <p; p2++,c2++)
+               for (c2 = 0, p2 = start_of_word; p2 <p; p2++, c2++)
                   ARGUV[ARGUC][c2] = (unsigned char) *p2;
                ARGUC++;
 
@@ -741,17 +742,17 @@ void update_timing(void)
 
 size_t retro_serialize_size(void)
 {
-	return 0;
+   return 0;
 }
 
 bool retro_serialize(void *data, size_t size)
 {
-    return false;
+   return false;
 }
 
 bool retro_unserialize(const void *data, size_t size)
 {
-    return false;
+   return false;
 }
 
 void retro_cheat_reset(void)
@@ -759,9 +760,9 @@ void retro_cheat_reset(void)
 
 void retro_cheat_set(unsigned index, bool enabled, const char *code)
 {
-    (void)index;
-    (void)enabled;
-    (void)code;
+   (void)index;
+   (void)enabled;
+   (void)code;
 }
 
 bool retro_load_game(const struct retro_game_info *info)
@@ -770,7 +771,7 @@ bool retro_load_game(const struct retro_game_info *info)
 
    full_path = info->path;
 
-   strcpy(RPATH,full_path);
+   strcpy(RPATH, full_path);
 
    extract_directory(base_dir, info->path, sizeof(base_dir));
 
@@ -781,30 +782,30 @@ bool retro_load_game(const struct retro_game_info *info)
 
 bool retro_load_game_special(unsigned game_type, const struct retro_game_info *info, size_t num_info)
 {
-    (void)game_type;
-    (void)info;
-    (void)num_info;
-    return false;
+   (void)game_type;
+   (void)info;
+   (void)num_info;
+   return false;
 }
 
 void retro_unload_game(void)
 {
-     pauseg=0;
+   pauseg = 0;
 }
 
 unsigned retro_get_region(void)
 {
-    return RETRO_REGION_NTSC;
+   return RETRO_REGION_NTSC;
 }
 
 unsigned retro_api_version(void)
 {
-    return RETRO_API_VERSION;
+   return RETRO_API_VERSION;
 }
 
 void *retro_get_memory_data(unsigned id)
 {
-    return NULL;
+   return NULL;
 }
 
 size_t retro_get_memory_size(unsigned id)
@@ -825,7 +826,7 @@ void retro_init(void)
    if (environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &system_dir) && system_dir)
    {
       // if defined, use the system directory
-      retro_system_directory=system_dir;
+      retro_system_directory = system_dir;
    }
 
    const char *content_dir = NULL;
@@ -833,7 +834,7 @@ void retro_init(void)
    if (environ_cb(RETRO_ENVIRONMENT_GET_CONTENT_DIRECTORY, &content_dir) && content_dir)
    {
       // if defined, use the system directory
-      retro_content_directory=content_dir;
+      retro_content_directory = content_dir;
    }
 
    const char *save_dir = NULL;
@@ -846,13 +847,13 @@ void retro_init(void)
    else
    {
       // make retro_save_directory the same in case RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY is not implemented by the frontend
-      retro_save_directory=retro_system_directory;
+      retro_save_directory = retro_system_directory;
    }
 
-   if(retro_system_directory==NULL)sprintf(RETRO_DIR, "%s\0",".");
+   if(retro_system_directory == NULL) sprintf(RETRO_DIR, "%s\0",".");
    else sprintf(RETRO_DIR, "%s\0", retro_system_directory);
 
-   sprintf(retro_system_conf, "%s%ckeropi\0",RETRO_DIR,slash);
+   sprintf(retro_system_conf, "%s%ckeropi\0", RETRO_DIR, slash);
 
    enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
 
@@ -869,8 +870,8 @@ void retro_init(void)
 */
    update_variables();
 
-   memset(Core_Key_Sate,0,512);
-   memset(Core_old_Key_Sate ,0, sizeof(Core_old_Key_Sate));
+   memset(Core_Key_Sate, 0, 512);
+   memset(Core_old_Key_Sate, 0, sizeof(Core_old_Key_Sate));
 }
 
 void retro_deinit(void)
@@ -884,7 +885,7 @@ void retro_reset(void)
    WinX68k_Reset();
 }
 
-static int firstcall=1;
+static int firstcall = 1;
 
 void retro_run(void)
 {
@@ -893,7 +894,7 @@ void retro_run(void)
    if(firstcall)
    {
       pre_main(RPATH);
-      firstcall=0;
+      firstcall = 0;
       p6logd("INIT done\n");
       update_variables();
       return;
@@ -904,14 +905,14 @@ void retro_run(void)
       if (CHANGEAV == 1)
       {
          update_geometry();
-         CHANGEAV=0;
+         CHANGEAV = 0;
       }
       if (CHANGEAV_TIMING == 1)
       {
          update_timing();
-         CHANGEAV_TIMING=0;
+         CHANGEAV_TIMING = 0;
       }
-      p6logd("w:%d h:%d a:%.3f\n",retrow,retroh,(float)(4.0/3.0));
+      p6logd("w:%d h:%d a:%.3f\n", retrow, retroh, (float)(4.0/3.0));
       p6logd("fps:%.2f soundrate:%d\n", FRAMERATE, (int)SOUNDRATE);
    }
 
@@ -922,14 +923,13 @@ void retro_run(void)
 
    update_input();
 
-   if(pauseg!=-1)
+   if(pauseg != -1)
    {
    }
 
    exec_app_retro();
 
-   raudio_callback(NULL, NULL, SNDSZ*4);
+   raudio_callback(NULL, NULL, SNDSZ * 4);
 
    video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
 }
-
