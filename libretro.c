@@ -99,7 +99,8 @@ bool set_image_index(unsigned index)
       return true;
    }
 
-   FDD_SetFD(0, disk_paths[disk_index], 0);
+   FDD_SetFD(1, disk_paths[disk_index], 0);
+   strcpy(Config.FDDImage[1], disk_paths[disk_index]);
    return true;
 }
 
