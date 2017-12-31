@@ -473,7 +473,7 @@ void retro_set_controller_descriptors()
          if (i < size)
             inputDescriptors[i] = inputDescriptorsP1[i];
          else
-            inputDescriptors[i] = inputDescriptorsP2[i - 10];
+            inputDescriptors[i] = inputDescriptorsP2[i - 16];
       }
    }
    else if (joypad1 || joypad2)
