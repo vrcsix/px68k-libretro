@@ -67,12 +67,15 @@ static  retro_input_poll_t input_poll_cb;
 
 static char base_dir[MAX_PATH];
 
+static void update_variables(void);
+
 /* .dsk swap support */
 struct retro_disk_control_callback dskcb;
 unsigned disk_index = 0;
 unsigned disk_images = 0;
 char disk_paths[10][MAX_PATH];
 bool disk_inserted = false;
+unsigned disk_drive = 1;
 
 bool set_eject_state(bool ejected)
 {
@@ -99,8 +102,9 @@ bool set_image_index(unsigned index)
       return true;
    }
 
-   FDD_SetFD(1, disk_paths[disk_index], 0);
-   strcpy(Config.FDDImage[1], disk_paths[disk_index]);
+   update_variables();
+   FDD_SetFD(disk_drive, disk_paths[disk_index], 0);
+   strcpy(Config.FDDImage[disk_drive], disk_paths[disk_index]);
    return true;
 }
 
@@ -529,6 +533,7 @@ void retro_set_environment(retro_environment_t cb)
       { "px68k_joytype2" , "P2 Joypad Type; Default (2 Buttons)|CPSF-MD (8 Buttons)|CPSF-SFC (8 Buttons)" },
       { "px68k_adpcm_vol" , "ADPCM Volume; 15|0|1|2|3|4|5|6|7|8|9|10|11|12|13|14" },
       { "px68k_opm_vol" , "OPM Volume; 12|13|14|15|0|1|2|3|4|5|6|7|8|9|10|11" },
+      { "px68k_disk_drive" , "Swap Disks on Drive; FDD1|FDD0" },
 #ifndef NO_MERCURY
       { "px68k_mercury_vol" , "OPM Volume; 13|14|15|0|1|2|3|4|5|6|7|8|9|10|11|12" },
 #endif
@@ -672,6 +677,17 @@ static void update_variables(void)
          Config.OPM_VOL = opm_vol;
          OPM_SetVolume((BYTE)Config.OPM_VOL);
       }
+   }
+
+   var.key = "px68k_disk_drive";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "FDD0") == 0)
+         disk_drive = 0;
+      else
+         disk_drive = 1;
    }
 }
 
