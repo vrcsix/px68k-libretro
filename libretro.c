@@ -19,7 +19,7 @@ char slash = '\\';
 char slash = '/';
 #endif
 
-#define MODE_HIGH 55.45 /* 31.50 kHz - commonly used  */
+#define MODE_HIGH 55.5  /* 31.50 kHz - commonly used  */
 #define MODE_NORM 59.94 /* 15.98 kHz - actual value should be ~61.46 fps. this is lowered to
                      * reduced the chances of audio stutters due to mismatch
                      * fps when vsync is used since most monitors are only capable
@@ -747,13 +747,10 @@ void update_geometry(void)
 void update_timing(void)
 {
    struct retro_system_av_info system_av_info;
-   /* retro_get_system_av_info(&system_av_info); */
+   retro_get_system_av_info(&system_av_info);
    FRAMERATE = (VID_MODE ? MODE_HIGH : MODE_NORM);
-   /* Updating system_av_info.timing.fps seems enough for a fps update */
-   /* unless this is a bug? Since it works, lets just to it this way atm. */
    system_av_info.timing.fps = FRAMERATE;
-
-   /* environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &system_av_info); */
+   environ_cb(RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO, &system_av_info);
 }
 
 size_t retro_serialize_size(void)
