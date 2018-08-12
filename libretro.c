@@ -12,6 +12,7 @@
 #include "fmgen/fmg_wrap.h"
 #include "x68k/adpcm.h"
 #include "x68k/fdd.h"
+#include "x68k/x68kmemory.h"
 
 #ifdef _WIN32
 char slash = '\\';
@@ -818,11 +819,15 @@ unsigned retro_api_version(void)
 
 void *retro_get_memory_data(unsigned id)
 {
+   if ( id == RETRO_MEMORY_SYSTEM_RAM )
+      return MEM;
    return NULL;
 }
 
 size_t retro_get_memory_size(unsigned id)
 {
+   if ( id == RETRO_MEMORY_SYSTEM_RAM )
+      return 0xc00000;
     return 0;
 }
 
